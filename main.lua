@@ -157,7 +157,7 @@ function love.load()
 		quarters = 0,
 		width = 50,
 		height = 50,
-		speed = 2,
+		speed = 3,
 		moving = false,
 		timer = 0,
 		currentframe = 1,
@@ -461,13 +461,13 @@ function love.update(dt)
 						if enemy.timer ~= nil then
 							enemy.timer = enemy.timer + dt
 							if enemy.nextdir == "up" then
-									enemy.y = enemy.y - .5
+									enemy.y = enemy.y - enemy.speed
 								elseif enemy.nextdir == "down" then
-									enemy.y = enemy.y + .5
+									enemy.y = enemy.y + enemy.speed
 								elseif enemy.nextdir == "left" then
-									enemy.x = enemy.x - .5
+									enemy.x = enemy.x - enemy.speed
 								elseif enemy.nextdir == "right" then
-									enemy.x = enemy.x + .5
+									enemy.x = enemy.x + enemy.speed
 								end
 							if enemy.timer > 0.1 then
 								enemy.timer = 0
@@ -481,13 +481,13 @@ function love.update(dt)
 						if enemy.timer ~= nil then
 							enemy.timer = enemy.timer + dt
 							if enemy.nextdir == "up" then
-									enemy.y = enemy.y - 1
+									enemy.y = enemy.y - enemy.speed
 								elseif enemy.nextdir == "down" then
-									enemy.y = enemy.y + 1
+									enemy.y = enemy.y + enemy.speed
 								elseif enemy.nextdir == "left" then
-									enemy.x = enemy.x - 1
+									enemy.x = enemy.x - enemy.speed
 								elseif enemy.nextdir == "right" then
-									enemy.x = enemy.x + 1
+									enemy.x = enemy.x + enemy.speed
 								end
 							if enemy.timer > 0.1 then
 								enemy.timer = 0
@@ -509,11 +509,11 @@ function love.update(dt)
 		--sword stays onscreen for limited time
 		if sword.button == true then
 			sword.counter = sword.counter + 1
-			if sword.counter % 4 == 0 then
+			if sword.counter % 3 == 0 then
 				sword.currentframe = sword.currentframe + 1
 				player.currentframe = player.currentframe + 1
 			end
-			if sword.counter >= 24 then
+			if sword.counter >= 18 then
 				sword.counter = 0
 				sword.currentframe = 1
 				player.currentframe = 1
@@ -1019,8 +1019,8 @@ function love.update(dt)
 						end
 					end
 					if enemy.name == "slime" then
-						table.insert(grid[starti][startj].enemies, {name = "mini-slime", x = enemy.x, y = enemy.y, width = enemy.width / 2, height = enemy.height / 2, health = 2, speed = 1, timer = 0, button = false, counter = 0, currentframe = 1, facing = "left", nextdir = "none", frozen = false, frozentimer = 0})
-						table.insert(grid[starti][startj].enemies, {name = "mini-slime", x = enemy.x, y = enemy.y, width = enemy.width / 2, height = enemy.height / 2, health = 2, speed = 1, timer = 0, button = false, counter = 0, currentframe = 1, facing = "right", nextdir = "none", frozen = false, frozentimer = 0})
+						table.insert(grid[starti][startj].enemies, {name = "mini-slime", x = enemy.x, y = enemy.y, width = enemy.width / 2, height = enemy.height / 2, health = 2, speed = 2, timer = 0, button = false, counter = 0, currentframe = 1, facing = "left", nextdir = "none", frozen = false, frozentimer = 0})
+						table.insert(grid[starti][startj].enemies, {name = "mini-slime", x = enemy.x, y = enemy.y, width = enemy.width / 2, height = enemy.height / 2, health = 2, speed = 2, timer = 0, button = false, counter = 0, currentframe = 1, facing = "right", nextdir = "none", frozen = false, frozentimer = 0})
 					end
 					table.remove(grid[starti][startj].enemies, i)
 				end
@@ -2181,7 +2181,7 @@ function createLevel()
 		end
 	end
 	grid[bossi][bossj] = {roomtype = "boss", completed = false, enemies = {}, items = {button = false}}
-	table.insert(grid[bossi][bossj].enemies, {name = "boss", x = 200, y = 150, width = 150, height = 150, health = 25, button = false, air = false, jumps = 3, shots = {}, counter = 0})
+	table.insert(grid[bossi][bossj].enemies, {name = "boss", x = 200, y = 150, width = 150, height = 150, health = 25, button = false, air = false, jumps = 3, shots = {}, counter = 250})
 	--chooose random room and make it the shop room
 	local shopcheck = false
 	while shopcheck == false do
@@ -2270,7 +2270,7 @@ function createLevel()
 					elseif rand2 == 2 then
 						table.insert(grid[i][j].enemies, {name = "lasermouth", x = x, y = y, width = width, height = height, health = 5, speed = 1, button = false, counter = 0, nextdir = "right", attackdir = "none", frozen = false, frozentimer = 0})
 					else
-						table.insert(grid[i][j].enemies, {name = "faker", x = x, y = y, width = 60, height = 60, health = 4, speed = 1, button = false, counter = 0, nextx = x, nexty = y, currentframe = 1, frozen = false, frozentimer = 0})
+						table.insert(grid[i][j].enemies, {name = "faker", x = x, y = y, width = 60, height = 60, health = 4, speed = 2, button = false, counter = 0, nextx = x, nexty = y, currentframe = 1, frozen = false, frozentimer = 0})
 					end
 				end
 			end
