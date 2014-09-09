@@ -1,0 +1,22 @@
+To-Do List:
+
+===DRAWING===
+[] Draw sprites for Zombie enemies
+[] Draw sprites for Lasermouth enemies
+[] Draw pickup sprites (quarters, hearts)
+[] Draw item sprites (inventory & ground)
+[] Draw door sprites (item door and boss door)
+[] Draw item vendor sprite
+[] Draw buttons for item menu
+
+===FIRST BOSS===
+[] Draw First Boss Sprites
+[] Code Boss AI (Hops to player location 3x, then shoots a few times)
+[] Make it spawn 4 Blobs on death
+
+===ITEMS===
+[] Finish making all item combinations
+[] Give all item combinations abilities
+
+===OTHER FIXES===
+[] Make enemies not spawn on top of blocks
