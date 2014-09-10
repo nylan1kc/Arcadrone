@@ -1018,6 +1018,12 @@ function love.update(dt)
 							end
 						end
 					end
+					if enemy.name == "boss" then
+					table.insert(grid[i][j].enemies, {name = "slime", x = enemy.x, y = enemy.y, width = 50, height = 50, health = 2, speed = 1, button = false, counter = 0, currentframe = 1, timer = 0, nextdir = "none", facing = "right", frozen = false, frozentimer = 0})
+					table.insert(grid[i][j].enemies, {name = "slime", x = enemy.x + 50, y = enemy.y, width = 50, height = 50, health = 2, speed = 1, button = false, counter = 0, currentframe = 1, timer = 0, nextdir = "none", facing = "right", frozen = false, frozentimer = 0})
+					table.insert(grid[i][j].enemies, {name = "slime", x = enemy.x, y = enemy.y + 50, width = 50, height = 50, health = 2, speed = 1, button = false, counter = 0, currentframe = 1, timer = 0, nextdir = "none", facing = "right", frozen = false, frozentimer = 0})
+					table.insert(grid[i][j].enemies, {name = "slime", x = enemy.x + 50, y = enemy.y + 50, width = 50, height = 50, health = 2, speed = 1, button = false, counter = 0, currentframe = 1, timer = 0, nextdir = "none", facing = "right", frozen = false, frozentimer = 0})
+					end
 					if enemy.name == "slime" then
 						table.insert(grid[starti][startj].enemies, {name = "mini-slime", x = enemy.x, y = enemy.y, width = enemy.width / 2, height = enemy.height / 2, health = 2, speed = 2, timer = 0, button = false, counter = 0, currentframe = 1, facing = "left", nextdir = "none", frozen = false, frozentimer = 0})
 						table.insert(grid[starti][startj].enemies, {name = "mini-slime", x = enemy.x, y = enemy.y, width = enemy.width / 2, height = enemy.height / 2, health = 2, speed = 2, timer = 0, button = false, counter = 0, currentframe = 1, facing = "right", nextdir = "none", frozen = false, frozentimer = 0})
