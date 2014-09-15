@@ -966,15 +966,15 @@ function love.update(dt)
 				--boss 2
 				if enemy.name == "boss2" then
 					if enemy.check == true then
-						table.insert(grid[starti][startj].enemies, {name = "mini-boss2", x = enemy.x - 20, y = enemy.y - 20, width = 60, height = 60, health = 4, speed = 2, button = false, counter = 0, currentframe = 1, frozen = false, frozentimer = 0})
+						table.insert(enemy.enemies, {name = "mini-boss2", x = enemy.x - 20, y = enemy.y - 20, width = 60, height = 60, health = 4, speed = 2, next_x = 0, next_y = 0, button = false, counter = 0, currentframe = 1, frozen = false, frozentimer = 0})
 						enemy.check = false
 					end
-					
-				end
-				if enemy.name == "mini-boss2" then
-					local radian = 180 / math.pi
-					local angle = 1
-					local rads = angle / radian
+					for i, mini in ipairs(enemy.enemies) do
+						local centerX = enemy.x + 75
+						local centerY = enemy.y + 75
+						mini.x = centerX + (mini.x - centerX) * math.cos(math.rad(1)) - (mini.y - centerY) * math.sin(math.rad(1))
+						mini.y = centerY + (mini.x - centerX) * math.sin(math.rad(1)) - (mini.y - centerY) * math.cos(math.rad(1))
+					end
 				end
 			end
 		end
@@ -2207,7 +2207,7 @@ function createLevel()
 	end
 	--create boss
 	grid[bossi][bossj] = {roomtype = "boss", completed = false, enemies = {}, items = {button = false}}
-	table.insert(grid[bossi][bossj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, button = false, check = true, counter = 250})
+	table.insert(grid[bossi][bossj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, enemies = {}, button = false, check = true, counter = 250})
 	--chooose random room and make it the shop room
 	local shopcheck = false
 	while shopcheck == false do
