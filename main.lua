@@ -963,6 +963,19 @@ function love.update(dt)
 						shot.y = shot.y + shot.slope
 					end
 				end
+				--boss 2
+				if enemy.name == "boss2" then
+					if enemy.check == true then
+						table.insert(grid[starti][startj].enemies, {name = "mini-boss2", x = enemy.x - 20, y = enemy.y - 20, width = 60, height = 60, health = 4, speed = 2, button = false, counter = 0, currentframe = 1, frozen = false, frozentimer = 0})
+						enemy.check = false
+					end
+					
+				end
+				if enemy.name == "mini-boss2" then
+					local radian = 180 / math.pi
+					local angle = 1
+					local rads = angle / radian
+				end
 			end
 		end
 		--keep enemies inbounds
@@ -1735,6 +1748,12 @@ function love.draw(dt)
 					love.graphics.rectangle("fill", shot.x, shot.y, shot.height, shot.width)
 				end
 				love.graphics.print(enemy.counter, 0, 20)
+			elseif enemy.name == "boss2" then
+				love.graphics.setColor(255, 0, 255)
+				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+			elseif enemy.name == "mini-boss2" then
+				love.graphics.setColor(0, 255, 255)
+				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
 			else
 				love.graphics.setColor(0, 255, 0)
 				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
@@ -2186,8 +2205,9 @@ function createLevel()
 			end
 		end
 	end
+	--create boss
 	grid[bossi][bossj] = {roomtype = "boss", completed = false, enemies = {}, items = {button = false}}
-	table.insert(grid[bossi][bossj].enemies, {name = "boss", x = 200, y = 150, width = 150, height = 150, health = 25, button = false, air = false, jumps = 3, shots = {}, counter = 250})
+	table.insert(grid[bossi][bossj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, button = false, check = true, counter = 250})
 	--chooose random room and make it the shop room
 	local shopcheck = false
 	while shopcheck == false do
@@ -2264,6 +2284,7 @@ function createLevel()
 		local rand = rng:random(-1, 2)
 			for k = 0, rand do
 				if grid[i][j].roomtype == "room" and grid[i][j].enemies ~= nil then
+					--create enemies
 					local x = rng:random(20, love.graphics.getWidth() - 80)
 					local y = rng:random(100, 410)
 					local width = 50
