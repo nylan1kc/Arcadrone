@@ -971,29 +971,29 @@ function love.update(dt)
 					else
 						if enemy.xDir == "right" then
 							local nextx = enemy.x + 1
-							if trymovement(nextx, y) == false then
+							if trymovement(nextx, y) == false and nextx < love.graphics.getWidth() - enemy.width - 20 then
 								enemy.x = nextx
 							else
 								enemy.xDir = "left"
 							end
 						else
 							local nextx = enemy.x - 1
-							if trymovement(nextx, y) == false then
+							if trymovement(nextx, y) == false and nextx > 20 then
 								enemy.x = nextx
 							else
 								enemy.xDir = "right"
 							end
 						end
-						if enemy.xDir == "down" then
+						if enemy.yDir == "down" then
 							local nexty = enemy.y + 1
-							if trymovement(x, nexty) == false then
+							if trymovement(x, nexty) == false and nexty < love.graphics.getWidth() - player.width - 20 then
 								enemy.y = nexty
 							else
 								enemy.yDir = "up"
 							end
 						else
 							local nexty = enemy.y - 1
-							if trymovement(x, nexty) == false then
+							if trymovement(x, nexty) == false and nexty > 100 then
 								enemy.y = nexty
 							else
 								enemy.yDir = "down"
