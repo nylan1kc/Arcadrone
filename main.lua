@@ -544,7 +544,7 @@ function love.update(dt)
 						elseif sword.dir == "down" then
 							enemy.y = enemy.y + 1
 						end
-						if enemy.button == false then
+						if enemy.button == false or (enemy.name == "boss2" and enemy.enemycount == 0) then
 							attackEffects(enemy)
 							enemy.health = enemy.health - player.attack
 							enemy.button = true
@@ -966,7 +966,9 @@ function love.update(dt)
 				--boss 2
 				if enemy.name == "boss2" then
 					if enemy.check == true then
-						table.insert(grid[starti][startj].enemies, {name = "mini-boss2", x = enemy.x + 50, y = enemy.y, width = 60, height = 60, health = 4, speed = 2, next_x = 0, next_y = 0, button = false, counter = 0, currentframe = 1, frozen = false, frozentimer = 0, distance = 1, angle = 0})
+						table.insert(grid[starti][startj].enemies, {name = "mini-boss2", x = enemy.x + 45, y = enemy.y, width = 60, height = 60, health = 8, speed = 2, next_x = 0, next_y = 0, button = false, counter = 0, currentframe = 1, frozen = false, frozentimer = 0, distance = 2, angle = 330})
+						table.insert(grid[starti][startj].enemies, {name = "mini-boss2", x = enemy.x, y = enemy.y + 120, width = 60, height = 60, health = 8, speed = 2, next_x = 0, next_y = 0, button = false, counter = 0, currentframe = 1, frozen = false, frozentimer = 0, distance = 2, angle = 210})
+						table.insert(grid[starti][startj].enemies, {name = "mini-boss2", x = enemy.x + 150, y = enemy.y + 120, width = 60, height = 60, health = 8, speed = 2, next_x = 0, next_y = 0, button = false, counter = 0, currentframe = 1, frozen = false, frozentimer = 0, distance = 2, angle = 90})
 						enemy.check = false
 					else
 						if enemy.xDir == "right" then
@@ -986,7 +988,7 @@ function love.update(dt)
 						end
 						if enemy.yDir == "down" then
 							local nexty = enemy.y + 1
-							if trymovement(x, nexty) == false and nexty < love.graphics.getWidth() - player.width - 20 then
+							if trymovement(x, nexty) == false and nexty < 450 - enemy.height then
 								enemy.y = nexty
 							else
 								enemy.yDir = "up"
@@ -1006,7 +1008,7 @@ function love.update(dt)
 								else
 									mini.x = mini.x - 1
 								end
-								if enemy.xDir == "down" then
+								if enemy.yDir == "down" then
 									mini.y = mini.y + 1
 								else
 									mini.y = mini.y - 1
@@ -1075,6 +1077,13 @@ function love.update(dt)
 								table.insert(grid[starti][startj].items, {name = "8-Ball", x = enemy.x, y = enemy.y, width = 50, height = 50, cost = .5, sell = .25})
 							elseif rand2 == 9 then
 								table.insert(grid[starti][startj].items, {name = "Balloon", x = enemy.x, y = enemy.y, width = 50, height = 50, cost = .5, sell = .25})
+							end
+						end
+					end
+					if enemy.name == "mini-boss2" then
+						for i, boss in ipairs(grid[starti][startj].enemies) do
+							if boss.name == "boss2" then
+								boss.enemycount = boss.enemycount - 1
 							end
 						end
 					end
@@ -2253,8 +2262,9 @@ function createLevel()
 		end
 	end
 	--create boss
-	grid[bossi][bossj] = {roomtype = "boss", completed = false, enemies = {}, items = {button = false}}
-	table.insert(grid[bossi][bossj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, enemies = {}, xDir = "left", yDir = "up", button = false, check = true, counter = 250})
+	grid[starti][startj] = {roomtype = "boss", completed = false, enemies = {}, items = {button = false}}
+	--table.insert(grid[bossi][bossj].enemies, {name = "boss", x = 200, y = 150, width = 150, height = 150, health = 25, button = false, air = false, jumps = 3, shots = {}, counter = 0})
+	table.insert(grid[starti][startj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, enemies = {}, xDir = "left", yDir = "up", check = true, counter = 250, enemycount = 3})
 	--chooose random room and make it the shop room
 	local shopcheck = false
 	while shopcheck == false do
@@ -2353,7 +2363,7 @@ function createLevel()
 			end
 		end
 	end
-	grid[starti][startj].enemies = nil
+	--grid[starti][startj].enemies = nil
 end
 
 function merge(selection1, selection2)
