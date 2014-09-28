@@ -973,14 +973,14 @@ function love.update(dt)
 					else
 						if enemy.xDir == "right" then
 							local nextx = enemy.x + 1
-							if trymovement(nextx, y) == false and nextx < love.graphics.getWidth() - enemy.width - 20 then
+							if trymovement(nextx, enemy.y) == false and nextx < love.graphics.getWidth() - enemy.width - 20 then
 								enemy.x = nextx
 							else
 								enemy.xDir = "left"
 							end
 						else
 							local nextx = enemy.x - 1
-							if trymovement(nextx, y) == false and nextx > 20 then
+							if trymovement(nextx, enemy.y) == false and nextx > 20 then
 								enemy.x = nextx
 							else
 								enemy.xDir = "right"
@@ -988,14 +988,14 @@ function love.update(dt)
 						end
 						if enemy.yDir == "down" then
 							local nexty = enemy.y + 1
-							if trymovement(x, nexty) == false and nexty < 450 - enemy.height then
+							if trymovement(enemy.x, nexty) == false and nexty < 450 - enemy.height then
 								enemy.y = nexty
 							else
 								enemy.yDir = "up"
 							end
 						else
 							local nexty = enemy.y - 1
-							if trymovement(x, nexty) == false and nexty > 100 then
+							if trymovement(enemy.x, nexty) == false and nexty > 100 then
 								enemy.y = nexty
 							else
 								enemy.yDir = "down"
@@ -1023,6 +1023,93 @@ function love.update(dt)
 					enemy.angle = enemy.angle + 1
 					if enemy.angle == 360 then
 						enemy.angle = 0
+					end
+				end
+				--boss 3
+				if enemy.name == "boss3" then
+					if enemy.nextDir == "up" then
+						local next_y = enemy.y - enemy.speed
+						if enemy.y == player.y then
+							enemy.speed = 8
+							enemy.nextDir = "left"
+						end
+						if trymovement(enemy.x, next_y) == false and next_y > 100 then
+							enemy.y = next_y
+						else
+							enemy.speed = 4
+							enemy.nextDir = "left"
+						end
+					elseif enemy.nextDir == "left" then
+						local next_x = enemy.x - enemy.speed
+						if trymovement(next_x, enemy.y) == false and next_x > 20 then
+							enemy.x = next_x
+						else
+							enemy.speed = 4
+							enemy.nextDir = "down"
+						end
+					elseif enemy.nextDir == "down" then
+						local next_y = enemy.y + enemy.speed
+						if enemy.y == player.y then
+							enemy.speed = 8
+							enemy.nextDir = "right"
+						end
+						if trymovement(enemy.x, next_y) == false and next_y < 450 - enemy.height then
+							enemy.y = next_y
+						else
+							enemy.speed = 4
+							enemy.nextDir = "right"
+						end
+					elseif enemy.nextDir == "right" then
+						local next_x = enemy.x + enemy.speed
+						if trymovement(next_x, enemy.y) == false and next_x < love.graphics.getWidth() - enemy.width - 20 then
+							enemy.x = next_x
+						else
+							enemy.speed = 4
+							enemy.nextDir = "up"
+						end
+					end
+					--boss 4
+					if enemy.name == "boss4" then
+						enemy.counter = enemy.counter + 1
+						for i, shot in ipairs(enemy.shots) do
+						if shot.slope < 0 then
+							shot.x = shot.x - shot.speed
+						else
+							shot.x = shot.x + shot.speed
+						end
+						shot.y = shot.y + shot.slope
+						end
+						if enemy.counter == 1 then
+							enemy.invisible = true
+						end
+						if enemy.counter == 200 then
+							enemy.x = rng:random(20, love.graphics.getWidth() - enemy.width - 20)
+							enemy.y = rng:random(100, 450 - enemy.height)
+							enemy.invisible = false
+						end
+						if enemy.counter == 350 then
+							local rand = rng:random(0, 1)
+							if rand == 0 then
+								local rand2 = rng:random(0, 3)
+								if rand2 == 0 then
+									table.insert(grid[i][j].enemies, {name = "slime", x = x, y = y, width = width, height = height, health = 2, speed = 1, button = false, counter = 0, currentframe = 1, timer = 0, nextdir = "none", facing = "right", frozen = false, frozentimer = 0})
+								elseif rand2 == 1 then
+									table.insert(grid[i][j].enemies, {name = "zombie", x = x, y = y, width = width, height = height, health = 2, speed = 1, button = false, frozen = false, frozentimer = 0})
+								elseif rand2 == 2 then
+									table.insert(grid[i][j].enemies, {name = "lasermouth", x = x, y = y, width = width, height = height, health = 5, speed = 1, button = false, counter = 0, nextdir = "right", attackdir = "none", frozen = false, frozentimer = 0})
+								else
+									table.insert(grid[i][j].enemies, {name = "faker", x = x, y = y, width = 60, height = 60, health = 4, speed = 2, button = false, counter = 0, nextx = x, nexty = y, currentframe = 1, frozen = false, frozentimer = 0})
+								end
+							elseif rand == 1 then
+								local rise = player.y - enemy.y
+							local run = player.x - enemy.x
+							local slope = rise/run
+							table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, slope = slope})
+							end
+						end
+						if enemy.counter == 400 then
+							enemy.counter = 0
+						end
 					end
 				end
 			end
@@ -2264,7 +2351,9 @@ function createLevel()
 	--create boss
 	grid[starti][startj] = {roomtype = "boss", completed = false, enemies = {}, items = {button = false}}
 	--table.insert(grid[bossi][bossj].enemies, {name = "boss", x = 200, y = 150, width = 150, height = 150, health = 25, button = false, air = false, jumps = 3, shots = {}, counter = 0})
-	table.insert(grid[starti][startj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, enemies = {}, xDir = "left", yDir = "up", check = true, counter = 250, enemycount = 3})
+	--table.insert(grid[starti][startj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, enemies = {}, xDir = "left", yDir = "up", check = true, counter = 250, enemycount = 3})
+	--table.insert(grid[starti][startj].enemies, {name = "boss3", x = 200, y = 150, width = 60, height = 60, health = 25, nextDir = "up", speed = 4})
+	table.insert(grid[starti][startj].enemies, {name = "boss4", x = 200, y = 150, width = 100, height = 100, health = 25, counter = 0, invisible = false, shots = {}})
 	--chooose random room and make it the shop room
 	local shopcheck = false
 	while shopcheck == false do
