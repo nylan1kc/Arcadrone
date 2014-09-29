@@ -955,12 +955,13 @@ function love.update(dt)
 						end
 					end
 					for i, shot in ipairs(enemy.shots) do
-						if shot.slope < 0 then
+						if player.x < enemy.x then
 							shot.x = shot.x - shot.speed
+							shot.y = shot.y - shot.slope
 						else
 							shot.x = shot.x + shot.speed
+							shot.y = shot.y + shot.slope
 						end
-						shot.y = shot.y + shot.slope
 					end
 				end
 				--boss 2
@@ -1068,37 +1069,39 @@ function love.update(dt)
 							enemy.nextDir = "up"
 						end
 					end
-					--boss 4
+				end
+				--boss 4
 					if enemy.name == "boss4" then
 						enemy.counter = enemy.counter + 1
 						for i, shot in ipairs(enemy.shots) do
-						if shot.slope < 0 then
+						if player.x < enemy.x then
 							shot.x = shot.x - shot.speed
+							shot.y = shot.y - shot.slope
 						else
 							shot.x = shot.x + shot.speed
+							shot.y = shot.y + shot.slope
 						end
-						shot.y = shot.y + shot.slope
-						end
+					end
 						if enemy.counter == 1 then
-							enemy.invisible = true
+							enemy.air = true
 						end
 						if enemy.counter == 200 then
 							enemy.x = rng:random(20, love.graphics.getWidth() - enemy.width - 20)
 							enemy.y = rng:random(100, 450 - enemy.height)
-							enemy.invisible = false
+							enemy.air = false
 						end
 						if enemy.counter == 350 then
 							local rand = rng:random(0, 1)
 							if rand == 0 then
 								local rand2 = rng:random(0, 3)
 								if rand2 == 0 then
-									table.insert(grid[i][j].enemies, {name = "slime", x = x, y = y, width = width, height = height, health = 2, speed = 1, button = false, counter = 0, currentframe = 1, timer = 0, nextdir = "none", facing = "right", frozen = false, frozentimer = 0})
+									table.insert(grid[starti][startj].enemies, {name = "slime", x = enemy.x, y = enemy.y, width = 50, height = 50, health = 2, speed = 1, button = false, counter = 0, currentframe = 1, timer = 0, nextdir = "none", facing = "right", frozen = false, frozentimer = 0})
 								elseif rand2 == 1 then
-									table.insert(grid[i][j].enemies, {name = "zombie", x = x, y = y, width = width, height = height, health = 2, speed = 1, button = false, frozen = false, frozentimer = 0})
+									table.insert(grid[starti][startj].enemies, {name = "zombie", x = enemy.x, y = y, width = 50, height = 50, health = 2, speed = 1, button = false, frozen = false, frozentimer = 0})
 								elseif rand2 == 2 then
-									table.insert(grid[i][j].enemies, {name = "lasermouth", x = x, y = y, width = width, height = height, health = 5, speed = 1, button = false, counter = 0, nextdir = "right", attackdir = "none", frozen = false, frozentimer = 0})
+									table.insert(grid[starti][startj].enemies, {name = "lasermouth", x = enemy.x, y = enemy.y, width = 50, height = 50, health = 5, speed = 1, button = false, counter = 0, nextdir = "right", attackdir = "none", frozen = false, frozentimer = 0})
 								else
-									table.insert(grid[i][j].enemies, {name = "faker", x = x, y = y, width = 60, height = 60, health = 4, speed = 2, button = false, counter = 0, nextx = x, nexty = y, currentframe = 1, frozen = false, frozentimer = 0})
+									table.insert(grid[starti][startj].enemies, {name = "faker", x = enemy.x, y = enemy.y, width = 60, height = 60, health = 4, speed = 2, button = false, counter = 0, nextx = x, nexty = y, currentframe = 1, frozen = false, frozentimer = 0})
 								end
 							elseif rand == 1 then
 								local rise = player.y - enemy.y
@@ -1111,7 +1114,6 @@ function love.update(dt)
 							enemy.counter = 0
 						end
 					end
-				end
 			end
 		end
 		--keep enemies inbounds
@@ -1897,9 +1899,24 @@ function love.draw(dt)
 			elseif enemy.name == "mini-boss2" then
 				love.graphics.setColor(0, 255, 255)
 				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+			elseif enemy.name == "boss4" then
+				if enemy.air == true then
+					love.graphics.setColor(10, 10, 10, 200)
+					love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+				else
+					love.graphics.setColor(0, 255, 0)
+					love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+				end
+				for i, shot in ipairs(enemy.shots) do
+					love.graphics.setColor(255, 0, 0)
+					love.graphics.rectangle("fill", shot.x, shot.y, shot.height, shot.width)
+				end
 			else
 				love.graphics.setColor(0, 255, 0)
 				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+				if enemy.counter ~= nil then
+					love.graphics.print(enemy.counter, 0, 20)
+				end
 			end
 		end
 	end
@@ -2350,10 +2367,10 @@ function createLevel()
 	end
 	--create boss
 	grid[starti][startj] = {roomtype = "boss", completed = false, enemies = {}, items = {button = false}}
-	--table.insert(grid[bossi][bossj].enemies, {name = "boss", x = 200, y = 150, width = 150, height = 150, health = 25, button = false, air = false, jumps = 3, shots = {}, counter = 0})
+	--table.insert(grid[starti][startj].enemies, {name = "boss", x = 200, y = 150, width = 150, height = 150, health = 25, button = false, air = false, jumps = 3, shots = {}, counter = 0})
 	--table.insert(grid[starti][startj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, enemies = {}, xDir = "left", yDir = "up", check = true, counter = 250, enemycount = 3})
 	--table.insert(grid[starti][startj].enemies, {name = "boss3", x = 200, y = 150, width = 60, height = 60, health = 25, nextDir = "up", speed = 4})
-	table.insert(grid[starti][startj].enemies, {name = "boss4", x = 200, y = 150, width = 100, height = 100, health = 25, counter = 0, invisible = false, shots = {}})
+	table.insert(grid[starti][startj].enemies, {name = "boss4", x = 200, y = 150, width = 100, height = 100, health = 25, counter = 0, air = false, shots = {}})
 	--chooose random room and make it the shop room
 	local shopcheck = false
 	while shopcheck == false do
