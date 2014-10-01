@@ -973,7 +973,7 @@ function love.update(dt)
 							shot.x = shot.x + shot.speed
 							shot.y = shot.y + shot.slope
 						end
-						if shot.y < 100 or shot.y > 450 - enemy.height or shot.x < 20 or shot.x > love.graphics.getWidth() - enemy.width - 20 then
+						if shot.y < 100 or shot.y > 450 - shot.height or shot.x < 20 or shot.x > love.graphics.getWidth() - shot.width - 20 then
 							table.remove(enemy.shots, i)
 						end
 					end
@@ -1088,17 +1088,27 @@ function love.update(dt)
 					if enemy.name == "boss4" then
 						enemy.counter = enemy.counter + 1
 						for i, shot in ipairs(enemy.shots) do
-						if player.x < enemy.x then
-							shot.x = shot.x - shot.speed
-							shot.y = shot.y - shot.slope
-						else
-							shot.x = shot.x + shot.speed
-							shot.y = shot.y + shot.slope
+							if shot.dir == "left" then
+								if math.abs(shot.slope) <= 1 then
+									shot.x = shot.x - shot.speed
+									shot.y = shot.y - shot.slope
+								else
+									shot.x = shot.x - shot.slope
+									shot.y = shot.y - shot.speed
+								end
+							else
+								if math.abs(shot.slope) <= 1 then
+									shot.x = shot.x + shot.speed
+									shot.y = shot.y + shot.slope
+								else
+									shot.x = shot.x + shot.shope
+									shot.y = shot.y + shot.speed
+								end
+							end
+							if shot.y < 100 or shot.y > 450 - shot.height or shot.x < 20 or shot.x > love.graphics.getWidth() - shot.width - 20 then
+								table.remove(enemy.shots, i)
+							end
 						end
-						if shot.y < 100 or shot.y > 450 - enemy.height or shot.x < 20 or shot.x > love.graphics.getWidth() - enemy.width - 20 then
-							table.remove(enemy.shots, i)
-						end
-					end
 						if enemy.counter == 1 then
 							enemy.air = true
 						end
@@ -1123,8 +1133,18 @@ function love.update(dt)
 							elseif rand == 1 then
 							local rise = (player.y + (player.height / 2)) - enemy.y
 							local run = (player.x + (player.width / 2)) - enemy.x
-							local slope = rise/run
-							table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, slope = slope})
+							local slope
+							if run == 0 then
+								slope = 0
+							else
+								slope = rise/run
+							end
+							if player.x < enemy.x then
+								local dir = "left"
+							else
+								local dir = "right"
+							end
+							table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, slope = slope, dir = dir})
 							end
 						end
 						if enemy.counter == 400 then
