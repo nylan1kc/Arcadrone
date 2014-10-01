@@ -599,6 +599,17 @@ function love.update(dt)
 						end
 					takedamage(enemy)
 				end
+				if enemy.shots ~= nil then
+					for i, shot in ipairs(enemy.shots) do
+						if player.y + player.height > shot.y and
+						player.y < shot.y + shot.height and
+						player.x + player.width > shot.x and
+						player.x < shot.x + shot.width then
+							table.remove(enemy.shots, i)
+							takedamage(enemy)
+						end
+					end
+				end
 			end
 			if player.button == true and player.counter < 200 then
 				player.counter = player.counter + 1
@@ -944,8 +955,8 @@ function love.update(dt)
 					else
 						enemy.air = false
 						if enemy.counter == 600 or enemy.counter == 700 or enemy.counter == 800 then
-							local rise = player.y - enemy.y
-							local run = player.x - enemy.x
+							local rise = (player.y + (player.height / 2)) - enemy.y
+							local run = (player.x + (player.width / 2)) - enemy.x
 							local slope = rise/run
 							table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, slope = slope})	
 						end
@@ -961,6 +972,9 @@ function love.update(dt)
 						else
 							shot.x = shot.x + shot.speed
 							shot.y = shot.y + shot.slope
+						end
+						if shot.y < 100 or shot.y > 450 - enemy.height or shot.x < 20 or shot.x > love.graphics.getWidth() - enemy.width - 20 then
+							table.remove(enemy.shots, i)
 						end
 					end
 				end
@@ -1081,6 +1095,9 @@ function love.update(dt)
 							shot.x = shot.x + shot.speed
 							shot.y = shot.y + shot.slope
 						end
+						if shot.y < 100 or shot.y > 450 - enemy.height or shot.x < 20 or shot.x > love.graphics.getWidth() - enemy.width - 20 then
+							table.remove(enemy.shots, i)
+						end
 					end
 						if enemy.counter == 1 then
 							enemy.air = true
@@ -1097,15 +1114,15 @@ function love.update(dt)
 								if rand2 == 0 then
 									table.insert(grid[starti][startj].enemies, {name = "slime", x = enemy.x, y = enemy.y, width = 50, height = 50, health = 2, speed = 1, button = false, counter = 0, currentframe = 1, timer = 0, nextdir = "none", facing = "right", frozen = false, frozentimer = 0})
 								elseif rand2 == 1 then
-									table.insert(grid[starti][startj].enemies, {name = "zombie", x = enemy.x, y = y, width = 50, height = 50, health = 2, speed = 1, button = false, frozen = false, frozentimer = 0})
+									table.insert(grid[starti][startj].enemies, {name = "zombie", x = enemy.x, y = enemy.y, width = 50, height = 50, health = 2, speed = 1, button = false, frozen = false, frozentimer = 0})
 								elseif rand2 == 2 then
 									table.insert(grid[starti][startj].enemies, {name = "lasermouth", x = enemy.x, y = enemy.y, width = 50, height = 50, health = 5, speed = 1, button = false, counter = 0, nextdir = "right", attackdir = "none", frozen = false, frozentimer = 0})
 								else
 									table.insert(grid[starti][startj].enemies, {name = "faker", x = enemy.x, y = enemy.y, width = 60, height = 60, health = 4, speed = 2, button = false, counter = 0, nextx = x, nexty = y, currentframe = 1, frozen = false, frozentimer = 0})
 								end
 							elseif rand == 1 then
-								local rise = player.y - enemy.y
-							local run = player.x - enemy.x
+							local rise = (player.y + (player.height / 2)) - enemy.y
+							local run = (player.x + (player.width / 2)) - enemy.x
 							local slope = rise/run
 							table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, slope = slope})
 							end
