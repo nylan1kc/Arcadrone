@@ -955,10 +955,13 @@ function love.update(dt)
 					else
 						enemy.air = false
 						if enemy.counter == 600 or enemy.counter == 700 or enemy.counter == 800 then
-							local rise = (player.y + (player.height / 2)) - enemy.y
-							local run = (player.x + (player.width / 2)) - enemy.x
-							local slope = rise/run
-							table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, slope = slope})	
+							local rise = (player.y + (player.height / 2)) - (enemy.y + (enemy.height/2))
+							local run = (player.x + (player.width / 2)) - (enemy.x + (enemy.width/2))
+							local angle = math.atan(rise/run)
+							if player.x + (player.width / 2) < enemy.x + (enemy.width / 2) then
+								angle = angle - math.pi
+							end
+							table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = angle})	
 						end
 						if enemy.counter == 1000 then
 							enemy.jumps = 3
@@ -966,13 +969,8 @@ function love.update(dt)
 						end
 					end
 					for i, shot in ipairs(enemy.shots) do
-						if player.x < enemy.x then
-							shot.x = shot.x - shot.speed
-							shot.y = shot.y - shot.slope
-						else
-							shot.x = shot.x + shot.speed
-							shot.y = shot.y + shot.slope
-						end
+						shot.x = shot.x + (shot.speed * math.cos(shot.angle))
+						shot.y = shot.y + (shot.speed * math.sin(shot.angle))
 						if shot.y < 100 or shot.y > 450 - shot.height or shot.x < 20 or shot.x > love.graphics.getWidth() - shot.width - 20 then
 							table.remove(enemy.shots, i)
 						end
@@ -1088,23 +1086,8 @@ function love.update(dt)
 					if enemy.name == "boss4" then
 						enemy.counter = enemy.counter + 1
 						for i, shot in ipairs(enemy.shots) do
-							if shot.dir == "left" then
-								if math.abs(shot.slope) <= 1 then
-									shot.x = shot.x - shot.speed
-									shot.y = shot.y - shot.slope
-								else
-									shot.x = shot.x - shot.slope
-									shot.y = shot.y - shot.speed
-								end
-							else
-								if math.abs(shot.slope) <= 1 then
-									shot.x = shot.x + shot.speed
-									shot.y = shot.y + shot.slope
-								else
-									shot.x = shot.x + shot.shope
-									shot.y = shot.y + shot.speed
-								end
-							end
+							shot.x = shot.x + (shot.speed * math.cos(shot.angle))
+							shot.y = shot.y + (shot.speed * math.sin(shot.angle))
 							if shot.y < 100 or shot.y > 450 - shot.height or shot.x < 20 or shot.x > love.graphics.getWidth() - shot.width - 20 then
 								table.remove(enemy.shots, i)
 							end
@@ -1131,20 +1114,13 @@ function love.update(dt)
 									table.insert(grid[starti][startj].enemies, {name = "faker", x = enemy.x, y = enemy.y, width = 60, height = 60, health = 4, speed = 2, button = false, counter = 0, nextx = x, nexty = y, currentframe = 1, frozen = false, frozentimer = 0})
 								end
 							elseif rand == 1 then
-							local rise = (player.y + (player.height / 2)) - enemy.y
-							local run = (player.x + (player.width / 2)) - enemy.x
-							local slope
-							if run == 0 then
-								slope = 0
-							else
-								slope = rise/run
+							local rise = (player.y + (player.height / 2)) - (enemy.y + (enemy.height/2))
+							local run = (player.x + (player.width / 2)) - (enemy.x + (enemy.width/2))
+							local angle = math.atan(rise/run)
+							if player.x + (player.width / 2) < enemy.x + (enemy.width / 2) then
+								angle = angle - math.pi
 							end
-							if player.x < enemy.x then
-								local dir = "left"
-							else
-								local dir = "right"
-							end
-							table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, slope = slope, dir = dir})
+							table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = angle})
 							end
 						end
 						if enemy.counter == 400 then
