@@ -1085,6 +1085,10 @@ function love.update(dt)
 				--boss 4
 					if enemy.name == "boss4" then
 						enemy.counter = enemy.counter + 1
+						if enemy.rush == true then
+							enemy.x = enemy.x + (enemy.speed * math.cos(enemy.angle))
+							enemy.y = enemy.y + (enemy.speed * math.sin(enemy.angle))
+						end
 						for i, shot in ipairs(enemy.shots) do
 							shot.x = shot.x + (shot.speed * math.cos(shot.angle))
 							shot.y = shot.y + (shot.speed * math.sin(shot.angle))
@@ -1101,7 +1105,7 @@ function love.update(dt)
 							enemy.air = false
 						end
 						if enemy.counter == 350 then
-							local rand = rng:random(0, 1)
+							local rand = rng:random(0, 2)
 							if rand == 0 then
 								local rand2 = rng:random(0, 3)
 								if rand2 == 0 then
@@ -1114,17 +1118,26 @@ function love.update(dt)
 									table.insert(grid[starti][startj].enemies, {name = "faker", x = enemy.x, y = enemy.y, width = 60, height = 60, health = 4, speed = 2, button = false, counter = 0, nextx = x, nexty = y, currentframe = 1, frozen = false, frozentimer = 0})
 								end
 							elseif rand == 1 then
-							local rise = (player.y + (player.height / 2)) - (enemy.y + (enemy.height/2))
-							local run = (player.x + (player.width / 2)) - (enemy.x + (enemy.width/2))
-							local angle = math.atan(rise/run)
-							if player.x + (player.width / 2) < enemy.x + (enemy.width / 2) then
-								angle = angle - math.pi
-							end
-							table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = angle})
-							end
+								local rise = (player.y + (player.height / 2)) - (enemy.y + (enemy.height/2))
+								local run = (player.x + (player.width / 2)) - (enemy.x + (enemy.width/2))
+								local angle = math.atan(rise/run)
+								if player.x + (player.width / 2) < enemy.x + (enemy.width / 2) then
+									angle = angle - math.pi
+								end
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = angle})
+							elseif rand == 2 then
+								local rise = (player.y + (player.height / 2)) - (enemy.y + (enemy.height/2))
+								local run = (player.x + (player.width / 2)) - (enemy.x + (enemy.width/2))
+								enemy.angle = math.atan(rise/run)
+								if player.x + (player.width / 2) < enemy.x + (enemy.width / 2) then
+									enemy.angle = enemy.angle - math.pi
+								end
+								enemy.rush = true
+							end							
 						end
 						if enemy.counter == 400 then
 							enemy.counter = 0
+							enemy.rush = false
 						end
 					end
 			end
@@ -2383,7 +2396,7 @@ function createLevel()
 	--table.insert(grid[starti][startj].enemies, {name = "boss", x = 200, y = 150, width = 150, height = 150, health = 25, button = false, air = false, jumps = 3, shots = {}, counter = 0})
 	--table.insert(grid[starti][startj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, enemies = {}, xDir = "left", yDir = "up", check = true, counter = 250, enemycount = 3})
 	--table.insert(grid[starti][startj].enemies, {name = "boss3", x = 200, y = 150, width = 60, height = 60, health = 25, nextDir = "up", speed = 4})
-	table.insert(grid[starti][startj].enemies, {name = "boss4", x = 200, y = 150, width = 100, height = 100, health = 25, counter = 0, air = false, shots = {}})
+	table.insert(grid[starti][startj].enemies, {name = "boss4", x = 200, y = 150, width = 100, height = 100, health = 25, counter = 0, air = false, shots = {}, rush = false, speed = 4, angle = 0})
 	--chooose random room and make it the shop room
 	local shopcheck = false
 	while shopcheck == false do
