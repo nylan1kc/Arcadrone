@@ -610,6 +610,16 @@ function love.update(dt)
 						end
 					end
 				end
+				if enemy.lasers ~= nil then
+					for i, laser in ipairs(enemy.lasers) do
+						if player.y + player.height > laser.y and
+						player.y < laser.y + laser.height and
+						player.x + player.width > laser.x and
+						player.x < laser.x + laser.width then
+							takedamage(enemy)
+						end
+					end
+				end
 			end
 			if player.button == true and player.counter < 200 then
 				player.counter = player.counter + 1
@@ -1110,17 +1120,17 @@ function love.update(dt)
 				--boss 4
 				if enemy.name == "boss4" then
 					enemy.counter = enemy.counter + 1
+					for i, shot in ipairs(enemy.shots) do
+						shot.x = shot.x + (shot.speed * math.cos(shot.angle))
+						shot.y = shot.y + (shot.speed * math.sin(shot.angle))
+						if shot.y < 100 or shot.y > 450 - shot.height or shot.x < 20 or shot.x > love.graphics.getWidth() - shot.width - 20 then
+							table.remove(enemy.shots, i)
+						end
+					end
 					if enemy.frozen == false then
 						if enemy.rush == true then
 							enemy.x = enemy.x + (enemy.speed * math.cos(enemy.angle))
 							enemy.y = enemy.y + (enemy.speed * math.sin(enemy.angle))
-						end
-						for i, shot in ipairs(enemy.shots) do
-							shot.x = shot.x + (shot.speed * math.cos(shot.angle))
-							shot.y = shot.y + (shot.speed * math.sin(shot.angle))
-							if shot.y < 100 or shot.y > 450 - shot.height or shot.x < 20 or shot.x > love.graphics.getWidth() - shot.width - 20 then
-								table.remove(enemy.shots, i)
-							end
 						end
 						if enemy.counter == 1 then
 							enemy.air = true
@@ -1184,6 +1194,12 @@ function love.update(dt)
 							table.remove(enemy.shots, i)
 						end
 					end
+					for i, laser in ipairs(enemy.lasers) do
+						laser.counter = laser.counter + 1
+						if laser.counter > 50 then
+							table.remove(enemy.lasers, i)
+						end
+					end
 					if enemy.frozen == false then
 						if enemy.counter < 250 then
 							if enemy.x > player.x then
@@ -1211,7 +1227,7 @@ function love.update(dt)
 						end
 						if enemy.counter == 350 then
 							--local rand = rng:random(0,5)
-							local rand = 0
+							local rand = 3
 							if rand == 0 then
 								--quickly rushes to the other side of the room
 								if enemy.counter == 350 then
@@ -1234,8 +1250,16 @@ function love.update(dt)
 								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = (7 * math.pi) / 4})
 							elseif rand == 2 then
 								--spawns 3 horizontal lasers
+								table.insert(enemy.lasers, {x = 20, y = 100, width = 600, height = 70, counter = 0})
+								table.insert(enemy.lasers, {x = 20, y = 240, width = 600, height = 70, counter = 0})
+								table.insert(enemy.lasers, {x = 20, y = 380, width = 600, height = 70, counter = 0})
 							elseif rand == 3 then
 								--spawns 5 vertical lasers
+								table.insert(enemy.lasers, {x = 20, y = 100, width = 65, height = 350, counter = 0})
+								table.insert(enemy.lasers, {x = 150, y = 100, width = 65, height = 350, counter = 0})
+								table.insert(enemy.lasers, {x = 297, y = 100, width = 65, height = 350, counter = 0})
+								table.insert(enemy.lasers, {x = 435, y = 100, width = 65, height = 350, counter = 0})
+								table.insert(enemy.lasers, {x = 555, y = 100, width = 65, height = 350, counter = 0})
 							elseif rand == 4 then
 								--spawns 5 shots that follow the players location
 								if enemy.counter == 350 or enemy.counter == 360 or enemy.counter == 370 or enemy.counter == 380 or enemy.counter == 390 then
@@ -2070,7 +2094,7 @@ function love.draw(dt)
 				end
 				for i, shot in ipairs(enemy.shots) do
 					love.graphics.setColor(255, 0, 0)
-					love.graphics.rectangle("fill", shot.x, shot.y, shot.height, shot.width)
+					love.graphics.rectangle("fill", shot.x, shot.y, shot.width, shot.height)
 				end
 				love.graphics.print(enemy.counter, 0, 20)
 			elseif enemy.name == "boss2" then
@@ -2089,14 +2113,18 @@ function love.draw(dt)
 				end
 				for i, shot in ipairs(enemy.shots) do
 					love.graphics.setColor(255, 0, 0)
-					love.graphics.rectangle("fill", shot.x, shot.y, shot.height, shot.width)
+					love.graphics.rectangle("fill", shot.x, shot.y, shot.width, shot.height)
 				end
 			elseif enemy.name == "boss5" then
 				love.graphics.setColor(0, 255, 0)
 				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
 				for i, shot in ipairs(enemy.shots) do
 					love.graphics.setColor(255, 0, 0)
-					love.graphics.rectangle("fill", shot.x, shot.y, shot.height, shot.width)
+					love.graphics.rectangle("fill", shot.x, shot.y, shot.width, shot.height)
+				end
+				for i, laser in ipairs(enemy.lasers) do
+					love.graphics.setColor(255, 0, 0)
+					love.graphics.rectangle("fill", laser.x, laser.y, laser.width, laser.height)
 				end
 			else
 				love.graphics.setColor(0, 255, 0)
@@ -2558,7 +2586,7 @@ function createLevel()
 	--table.insert(grid[starti][startj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, enemies = {}, xDir = "left", yDir = "up", check = true, counter = 250, enemycount = 3, frozen = false, frozentimer = 0})
 	--table.insert(grid[starti][startj].enemies, {name = "boss3", x = 200, y = 150, width = 60, height = 60, health = 25, nextDir = "up", speed = 4, frozen = false, frozentimer = 0})
 	--table.insert(grid[starti][startj].enemies, {name = "boss4", x = 200, y = 150, width = 100, height = 100, health = 25, counter = 0, air = false, shots = {}, rush = false, speed = 4, angle = 0, frozen = false, frozentimer = 0})
-	table.insert(grid[starti][startj].enemies, {name = "boss5", x = 200, y = 150, width = 150, height = 150, health = 100, counter = 0, shots = {}, speed = .25, frozen = false, frozentimer = 0, nextDir = "left", rush = false})
+	table.insert(grid[starti][startj].enemies, {name = "boss5", x = 200, y = 150, width = 150, height = 150, health = 100, counter = 0, shots = {}, speed = .25, frozen = false, frozentimer = 0, nextDir = "left", rush = false, lasers = {}})
 	--chooose random room and make it the shop room
 	local shopcheck = false
 	while shopcheck == false do
