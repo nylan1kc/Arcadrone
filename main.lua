@@ -1177,6 +1177,13 @@ function love.update(dt)
 				--boss 5
 				if enemy.name == "boss5" then
 					enemy.counter = enemy.counter + 1
+					for i, shot in ipairs(enemy.shots) do
+						shot.x = shot.x + (shot.speed * math.cos(shot.angle))
+						shot.y = shot.y + (shot.speed * math.sin(shot.angle))
+						if shot.y < 100 or shot.y > 450 - shot.height or shot.x < 20 or shot.x > love.graphics.getWidth() - shot.width - 20 then
+							table.remove(enemy.shots, i)
+						end
+					end
 					if enemy.frozen == false then
 						if enemy.counter < 250 then
 							if enemy.x > player.x then
@@ -1202,21 +1209,81 @@ function love.update(dt)
 								end
 							end
 						end
-						if enemy.counter > 250 then
-							local rand = rng:random(0,5)
+						if enemy.counter == 350 then
+							--local rand = rng:random(0,5)
+							local rand = 0
 							if rand == 0 then
-								--goes all the way to the left and then quickly goes right
+								--quickly rushes to the other side of the room
+								if enemy.counter == 350 then
+									if player.x < enemy.x then
+										enemy.nextDir = "left"
+									else
+										enemy.nextDir = "right"
+									end
+									enemy.rush = true
+								end
 							elseif rand == 1 then
 								--spawns 8 directional shots
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = 0})
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = math.pi / 4})
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = math.pi / 2})
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = (3 * math.pi) / 4})
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = math.pi})
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = (5 * math.pi) / 4})
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = (3 * math.pi) / 2})
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = (7 * math.pi) / 4})
 							elseif rand == 2 then
 								--spawns 3 horizontal lasers
 							elseif rand == 3 then
 								--spawns 5 vertical lasers
 							elseif rand == 4 then
 								--spawns 5 shots that follow the players location
+								if enemy.counter == 350 or enemy.counter == 360 or enemy.counter == 370 or enemy.counter == 380 or enemy.counter == 390 then
+									local rise = (player.y + (player.height / 2)) - (enemy.y + (enemy.height/2))
+									local run = (player.x + (player.width / 2)) - (enemy.x + (enemy.width/2))
+									local angle = math.atan(rise/run)
+									if player.x + (player.width / 2) < enemy.x + (enemy.width / 2) then
+										angle = angle - math.pi
+									end
+									table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = angle})
+								end
 							elseif rand == 5 then
 								--spawns 5 shots at the same time (like a spread-shot) toward the player
+								local rise = (player.y + (player.height / 2)) - (enemy.y + (enemy.height/2))
+								local run = (player.x + (player.width / 2)) - (enemy.x + (enemy.width/2))
+								local angle = math.atan(rise/run)
+								if player.x + (player.width / 2) < enemy.x + (enemy.width / 2) then
+									angle = angle - math.pi
+								end
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = angle})
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = angle - .2})
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = angle - .4})
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = angle + .4})
+								table.insert(enemy.shots, {x = enemy.x + (enemy.width/2), y = enemy.y + (enemy.height/2), width = 10, height = 10, speed = 3, angle = angle + .2})
 							end
+						end
+						if enemy.counter < 400 and enemy.rush == true then
+							if enemy.nextDir == "left" then
+								local next_x = enemy.x - 10
+								if trymovement(next_x, enemy.y) == false then
+									enemy.x = enemy.x - 10
+								else
+									enemy.counter = 0
+									enemy.rush = false
+								end
+							else
+								local next_x = enemy.x + 10
+								if trymovement(next_x, enemy.y) == false then
+									enemy.x = enemy.x + 10
+								else
+									enemy.counter = 0
+									enemy.rush = false
+								end
+							end
+						end
+						if enemy.counter == 400 then
+							enemy.counter = 0
+							enemy.rush = false
 						end
 					else
 						enemy.frozentimer = enemy.frozentimer + 1
@@ -2024,6 +2091,13 @@ function love.draw(dt)
 					love.graphics.setColor(255, 0, 0)
 					love.graphics.rectangle("fill", shot.x, shot.y, shot.height, shot.width)
 				end
+			elseif enemy.name == "boss5" then
+				love.graphics.setColor(0, 255, 0)
+				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+				for i, shot in ipairs(enemy.shots) do
+					love.graphics.setColor(255, 0, 0)
+					love.graphics.rectangle("fill", shot.x, shot.y, shot.height, shot.width)
+				end
 			else
 				love.graphics.setColor(0, 255, 0)
 				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
@@ -2484,7 +2558,7 @@ function createLevel()
 	--table.insert(grid[starti][startj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, enemies = {}, xDir = "left", yDir = "up", check = true, counter = 250, enemycount = 3, frozen = false, frozentimer = 0})
 	--table.insert(grid[starti][startj].enemies, {name = "boss3", x = 200, y = 150, width = 60, height = 60, health = 25, nextDir = "up", speed = 4, frozen = false, frozentimer = 0})
 	--table.insert(grid[starti][startj].enemies, {name = "boss4", x = 200, y = 150, width = 100, height = 100, health = 25, counter = 0, air = false, shots = {}, rush = false, speed = 4, angle = 0, frozen = false, frozentimer = 0})
-	table.insert(grid[starti][startj].enemies, {name = "boss5", x = 200, y = 150, width = 150, height = 150, health = 100, counter = 0, shots = {}, speed = .25, frozen = false, frozentimer = 0})
+	table.insert(grid[starti][startj].enemies, {name = "boss5", x = 200, y = 150, width = 150, height = 150, health = 100, counter = 0, shots = {}, speed = .25, frozen = false, frozentimer = 0, nextDir = "left", rush = false})
 	--chooose random room and make it the shop room
 	local shopcheck = false
 	while shopcheck == false do
