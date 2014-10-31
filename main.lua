@@ -1,5 +1,9 @@
 function love.load()
-	gamemode = "play"
+	gamemode = "start"
+	
+	bgalpha = 255
+	bgtrigger = false
+	
 	local Quad = love.graphics.newQuad
 	rng = love.math.newRandomGenerator(os.time())
 	--item images
@@ -1507,6 +1511,15 @@ function love.update(dt)
 			sellselection = 1
 		end
 	end
+	if gamemode == "start" then
+		if bgtrigger == true then
+			bgalpha = bgalpha - 5
+			if bgalpha <= 0 then
+				bgalpha = 0
+				gamemode = "play"
+			end
+		end
+	end
 end
 
 function love.draw(dt)
@@ -2286,6 +2299,12 @@ function love.draw(dt)
 			love.graphics.print(item.name, 100, 110 + (60 * i))
 		end
 	end
+	if gamemode == "start" then
+		love.graphics.setColor(0, 0, 0, bgalpha)
+		love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+		love.graphics.setColor(255, 255, 255, bgalpha)
+		love.graphics.print("Press ENTER to start.",  250, love.graphics.getHeight() / 2)
+	end
 end
 
 function love.keypressed(key)
@@ -2524,6 +2543,11 @@ function love.keypressed(key)
 				sellselection = 1
 				gamemode = "merge"
 			end
+		end
+	end
+	if gamemode == "start" then
+		if key == "return" then
+			bgtrigger = true
 		end
 	end
 end
