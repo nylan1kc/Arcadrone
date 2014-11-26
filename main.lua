@@ -1,6 +1,21 @@
 function love.load()
 	gamemode = "start"
 	
+	--save items
+	data = {}
+	
+	if not love.filesystem.exists('items.lua') then 
+		love.filesystem.newFile('items.lua')
+		love.filesystem.append('items.lua', 'pizzasworditem = false\n')
+		love.filesystem.append('items.lua', 'bearsworditem = false\n')
+	end
+	
+	for lines in love.filesystem.lines('items.lua') do
+		table.insert(data, lines)
+	end
+	
+	
+	
 	bgalpha = 255
 	bgtrigger = false
 	
@@ -148,7 +163,7 @@ function love.load()
 		number = 1,
 		size = 10
 	}
-	createLevel()
+	--createLevel()
 	player = {
 		x = 200,
 		y = 200,
@@ -1513,6 +1528,9 @@ function love.update(dt)
 	end
 	if gamemode == "start" then
 		if bgtrigger == true then
+			if bgalpha == 255 then
+				createLevel()
+			end
 			bgalpha = bgalpha - 5
 			if bgalpha <= 0 then
 				bgalpha = 0
@@ -1524,712 +1542,714 @@ end
 
 function love.draw(dt)
 	--draw bg
-	love.graphics.setColor(255, 255, 255)
-	love.graphics.draw(floor_1, 20, 100)
-	--draw blocks
-	if grid[starti][startj].blocks ~= nil then
-		for i, block in ipairs(grid[starti][startj].blocks) do
-			love.graphics.setColor(255, 255, 255)
-			if block.color == 0 then
-				love.graphics.draw(block_image_1, blockquads[rng:random(1, 2)], block.x, block.y)
-			elseif block.color == 1 then
-				love.graphics.draw(block_image_2, blockquads[rng:random(1, 2)], block.x, block.y)
-			elseif block.color == 2 then
-				love.graphics.draw(block_image_3, blockquads[rng:random(1, 2)], block.x, block.y)
-			elseif block.color == 3 then
-				love.graphics.draw(block_image_4, blockquads[rng:random(1, 2)], block.x, block.y)
-			elseif block.color == 4 then
-				love.graphics.draw(block_image_5, blockquads[rng:random(1, 2)], block.x, block.y)
-			else
-				love.graphics.draw(block_image_6, blockquads[rng:random(1, 2)], block.x, block.y)
-			end
-		end
-	end
-	--draw friend
-	for i, friend in ipairs(player.friends) do
-		if friend.name == "Piggy Bank" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(pig, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(pig, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Pizza Bank" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(pig_pizza, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(pig_pizza, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Digital Bank" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(pig_robot, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(pig_robot, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Teddy Bear" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(bear, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(bear, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Doll" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(doll, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(doll, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Pizza Delivery" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(doll_pizza, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(doll_pizza, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Dagger Girl" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(doll_sword, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(doll_sword, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "The Third Robot" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(doll_robot, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(doll_robot, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Fortune Teller" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(doll_8ball, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(doll_8ball, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Goldilocks" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(bear_doll, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(bear_doll, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Candy Girl" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(doll_candy, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(doll_candy, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Ms. Swine" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(pig_doll, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(pig_doll, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Medusa" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(doll_clock, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(doll_clock, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Robo-Bear" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(bear_robot, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(bear_robot, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Bad Teddy" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(bear_sword, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(bear_sword, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Piggy Bear" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(pig_bear, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(pig_bear, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Pizza Bear" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(pizza_bear, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(pizza_bear, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Mystic Bear" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(bear_8ball, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(bear_8ball, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Gamer M8" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(robot_8ball, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(robot_8ball, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "8-Ball Pig" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(pig_8ball, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(pig_8ball, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Toy Robot" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(robot, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(robot, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Pizza Robot" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(pizza_robot, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(pizza_robot, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Gumball Machine" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(pig_candy, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(pig_candy, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Candy Mecha" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(robot_candy, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(robot_candy, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Candy Bear" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(bear_candy, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(bear_candy, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Synchronursa" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(bear_clock, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(bear_clock, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Business Venture" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(pig_clock, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(pig_clock, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Vintage Robot" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(robot_clock, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(robot_clock, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Balloon" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "8-Ball Balloon" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(balloon_8ball, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(balloon_8ball, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Bear Balloon" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(bear_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(bear_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Piggy Balloon" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(pig_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(pig_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Stopwatch Balloon" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(clock_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(clock_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Pizza Balloon" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(pizza_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(pizza_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Spiky Balloon" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(sword_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(sword_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Helium Robot" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(robot_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(robot_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		elseif friend.name == "Hot Air Balloon" then
-			love.graphics.setColor(255, 255, 255)
-			if friend.facing == "right" then
-				love.graphics.draw(doll_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(doll_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
-			end
-		else
-			love.graphics.setColor(0, 150, 150, 50)
-			love.graphics.rectangle("fill", friend.x, friend.y, friend.width, friend.height)
-		end
-	end
-	--draw map
-	for i = 0, 6 do
-		for j = 0, 6 do
-			if grid[i][j].current == true then
-				love.graphics.setColor(255,0,0)
-				love.graphics.rectangle("fill", 20 + (30 * i), 10 + (10 * j), 30, 10)
-			elseif grid[i][j].roomtype == "room" then
+	if gamemode == "play" or bgalpha ~= 255 then
+		love.graphics.setColor(255, 255, 255)
+		love.graphics.draw(floor_1, 20, 100)
+		--draw blocks
+		if grid[starti][startj].blocks ~= nil then
+			for i, block in ipairs(grid[starti][startj].blocks) do
 				love.graphics.setColor(255, 255, 255)
-				love.graphics.rectangle("fill", 20 + (30 * i), 10 + (10 * j), 30, 10)
-			elseif grid[i][j].roomtype == "boss" then
-				love.graphics.setColor(0, 0, 255)
-				love.graphics.rectangle("fill", 20 + (30 * i), 10 + (10 * j), 30, 10)
-			elseif grid[i][j].roomtype == "shop" then
-				love.graphics.setColor(255, 255, 0)
-				love.graphics.rectangle("fill", 20 + (30 * i), 10 + (10 * j), 30, 10)
-			else
-				love.graphics.setColor(0, 0, 0)
-				love.graphics.rectangle("line", 20 + (30 * i), 10 + (10 * j), 30, 10)
+				if block.color == 0 then
+					love.graphics.draw(block_image_1, blockquads[rng:random(1, 2)], block.x, block.y)
+				elseif block.color == 1 then
+					love.graphics.draw(block_image_2, blockquads[rng:random(1, 2)], block.x, block.y)
+				elseif block.color == 2 then
+					love.graphics.draw(block_image_3, blockquads[rng:random(1, 2)], block.x, block.y)
+				elseif block.color == 3 then
+					love.graphics.draw(block_image_4, blockquads[rng:random(1, 2)], block.x, block.y)
+				elseif block.color == 4 then
+					love.graphics.draw(block_image_5, blockquads[rng:random(1, 2)], block.x, block.y)
+				else
+					love.graphics.draw(block_image_6, blockquads[rng:random(1, 2)], block.x, block.y)
+				end
 			end
 		end
-	end
-	--draw player health
-	for i = 0, player.maxhealth - 1 do
-		love.graphics.setColor(255, 255, 255)
-		love.graphics.draw(emptyheart, 300 + (i * 30), 30)
-	end
-	for i, item in ipairs(player.items) do
-		if item.health ~= nil then
-			love.graphics.setColor(200, 200, 200)
-			love.graphics.rectangle("fill", 300 + (30 * (player.maxhealth)) + ((item.health - 1) * 30), 30, 20, 20)
-		end
-	end
-	for i = 0, player.currenthealth - 1 do
-		love.graphics.setColor(255, 255, 255)
-		love.graphics.draw(fullheart, 300 + (i * 30), 30)
-	end
-	--draw player's quarters
-	love.graphics.setColor(255, 255, 255)
-	love.graphics.setFont(font)
-	love.graphics.print(string.format("$%.2f", player.quarters), 300, 10)
-	--draw usable item
-	love.graphics.setColor(150, 150, 150)
-	love.graphics.rectangle("line", 430, 15, 70, 75)
-	if #player.items > 0 then
-		if player.items[player.itemselect].name ~= nil then
-			local name = player.items[player.itemselect].name
-			love.graphics.setColor(255, 255, 255)
-			--sword items
-			if name == "Toy Sword" then
-				love.graphics.draw(sworditem, 440, 25)
-			elseif name == "Pizza Cutter" then
-				love.graphics.draw(pizzasworditem, 440, 25)
-			elseif name == "Bad Teddy" then
-				love.graphics.draw(bearsworditem, 440, 25)
-			elseif name == "Dagger Girl" then
-				love.graphics.draw(dollsworditem, 440, 25)
-			elseif name == "Robo-Sword" then
-				love.graphics.draw(robotsworditem, 440, 25)
-			elseif name == "Candy Cane Sword" then
-				love.graphics.draw(candysworditem, 440, 25)
-			elseif name == "Pork Sword" then
-				love.graphics.draw(pigsworditem, 440, 25)
-			elseif name == "Clockstopper" then
-				love.graphics.draw(clocksworditem, 440, 25)
-			elseif name == "Magic Blade" then
-				love.graphics.draw(eightballsworditem, 440, 25)
-			elseif name == "Spiky Balloon" then
-				love.graphics.draw(balloonsworditem, 440, 25)
-			--robot items
-			elseif name == "Toy Robot" then
-				love.graphics.draw(robotitem, 440, 25)
-			elseif name == "Gamer M8" then
-				love.graphics.draw(robot8ballitem, 440, 25)
-			elseif name == "Helium Robot" then
-				love.graphics.draw(robotballoonitem, 440, 25)
-			elseif name == "Robo-Bear" then
-				love.graphics.draw(bearrobotitem, 440, 25)
-			elseif name == "Candy Mecha" then
-				love.graphics.draw(robotcandyitem, 440, 25)
-			elseif name == "Vintage Robot" then
-				love.graphics.draw(robotclockitem, 440, 25)
-			elseif name == "The Third Robot" then
-				love.graphics.draw(dollrobotitem, 440, 25)
-			elseif name == "Digital Bank" then
-				love.graphics.draw(pigrobotitem, 440, 25)
-			elseif name == "Pizza Robot" then
-				love.graphics.draw(pizzarobotitem, 440, 25)
-			--pizza items
-			elseif name == "Pizza" then
-				love.graphics.draw(pizzaitem, 440, 25)
-			elseif name == "Mystery Meat" then
-				love.graphics.draw(eightballpizzaitem, 440, 25)
-			elseif name == "Pizza Balloon" then
-				love.graphics.draw(pizzaballoonitem, 440, 25)
-			elseif name == "Pizza Bear" then
-				love.graphics.draw(bearpizzaitem, 440, 25)
-			elseif name == "Pizza Candy" then
-				love.graphics.draw(pizzacandyitem, 440, 25)
-			elseif name == "Fossilized Pizza" then
-				love.graphics.draw(pizzaclockitem, 440, 25)
-			elseif name == "Pizza Delivery" then
-				love.graphics.draw(dollpizzaitem, 440, 25)
-			elseif name == "Pizza Bank" then
-				love.graphics.draw(pigpizzaitem, 440, 25)
-			--pig items
-			elseif name == "Piggy Bank" then
-				love.graphics.draw(pigitem, 440, 25)
-			elseif name == "8-Ball Pig" then
-				love.graphics.draw(pig8ballitem, 440, 25)
-			elseif name == "Piggy Balloon" then
-				love.graphics.draw(pigballoonitem, 440, 25)
-			elseif name == "Piggy Bear" then
-				love.graphics.draw(pigbearitem, 440, 25)
-			elseif name == "Gumball Machine" then
-				love.graphics.draw(pigcandyitem, 440, 25)
-			elseif name == "Business Venture" then
-				love.graphics.draw(pigclockitem, 440, 25)
-			elseif name == "Ms. Swine" then
-				love.graphics.draw(pigdollitem, 440, 25)
-			--doll items
-			elseif name == "Doll" then
-				love.graphics.draw(dollitem, 440, 25)
-			elseif name == "Fortune Teller" then
-				love.graphics.draw(doll8ballitem, 440, 25)
-			elseif name == "Hot Air Balloon" then
-				love.graphics.draw(dollballoonitem, 440, 25)
-			elseif name == "Goldilocks" then
-				love.graphics.draw(beardollitem, 440, 25)
-			elseif name == "Candy Girl" then
-				love.graphics.draw(dollcandyitem, 440, 25)
-			elseif name == "Medusa" then
-				love.graphics.draw(dollclockitem, 440, 25)
-			--clock items
-			elseif name == "Stopwatch" then
-				love.graphics.draw(clockitem, 440, 25)
-			elseif name == "Strange Clock" then
-				love.graphics.draw(eightballclockitem, 440, 25)
-			elseif name == "Stopwatch Balloon" then
-				love.graphics.draw(clockballoonitem, 440, 25)
-			elseif name == "Synchronursa" then
-				love.graphics.draw(bearclockitem, 440, 25)
-			elseif name == "Candy Time!" then
-				love.graphics.draw(candyclockitem, 440, 25)
-			--candy items
-			elseif name == "Candy" then
-				love.graphics.draw(candyitem, 440, 25)
-			elseif name == "Mystery Flavor" then
-				love.graphics.draw(eightballcandyitem, 440, 25)
-			elseif name == "Bubble Gum" then
-				love.graphics.draw(candyballoonitem, 440, 25)
-			elseif name == "Candy Bear" then
-				love.graphics.draw(bearcandyitem, 440, 25)
-			--bear items
-			elseif name == "Teddy Bear" then
-				love.graphics.draw(bearitem, 440, 25)
-			elseif name == "Mystic Bear" then
-				love.graphics.draw(bear8ballitem, 440, 25)
-			elseif name == "Bear Balloon" then
-				love.graphics.draw(bearballoonitem, 440, 25)
-			--balloon items
-			elseif name == "Balloon" then
-				love.graphics.draw(balloonitem, 440, 25)
-			elseif name == "8-Ball Balloon" then
-				love.graphics.draw(eightballballoonitem, 440, 25)
-			--8ball items
-			elseif name == "8-Ball" then
-				love.graphics.draw(eightballitem, 440, 25)
+		--draw friend
+		for i, friend in ipairs(player.friends) do
+			if friend.name == "Piggy Bank" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(pig, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(pig, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Pizza Bank" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(pig_pizza, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(pig_pizza, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Digital Bank" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(pig_robot, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(pig_robot, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Teddy Bear" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(bear, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(bear, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Doll" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(doll, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(doll, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Pizza Delivery" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(doll_pizza, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(doll_pizza, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Dagger Girl" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(doll_sword, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(doll_sword, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "The Third Robot" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(doll_robot, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(doll_robot, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Fortune Teller" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(doll_8ball, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(doll_8ball, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Goldilocks" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(bear_doll, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(bear_doll, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Candy Girl" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(doll_candy, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(doll_candy, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Ms. Swine" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(pig_doll, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(pig_doll, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Medusa" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(doll_clock, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(doll_clock, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Robo-Bear" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(bear_robot, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(bear_robot, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Bad Teddy" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(bear_sword, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(bear_sword, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Piggy Bear" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(pig_bear, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(pig_bear, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Pizza Bear" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(pizza_bear, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(pizza_bear, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Mystic Bear" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(bear_8ball, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(bear_8ball, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Gamer M8" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(robot_8ball, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(robot_8ball, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "8-Ball Pig" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(pig_8ball, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(pig_8ball, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Toy Robot" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(robot, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(robot, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Pizza Robot" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(pizza_robot, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(pizza_robot, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Gumball Machine" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(pig_candy, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(pig_candy, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Candy Mecha" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(robot_candy, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(robot_candy, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Candy Bear" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(bear_candy, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(bear_candy, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Synchronursa" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(bear_clock, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(bear_clock, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Business Venture" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(pig_clock, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(pig_clock, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Vintage Robot" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(robot_clock, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(robot_clock, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Balloon" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "8-Ball Balloon" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(balloon_8ball, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(balloon_8ball, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Bear Balloon" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(bear_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(bear_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Piggy Balloon" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(pig_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(pig_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Stopwatch Balloon" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(clock_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(clock_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Pizza Balloon" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(pizza_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(pizza_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Spiky Balloon" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(sword_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(sword_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Helium Robot" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(robot_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(robot_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
+			elseif friend.name == "Hot Air Balloon" then
+				love.graphics.setColor(255, 255, 255)
+				if friend.facing == "right" then
+					love.graphics.draw(doll_balloon, quads[friend.currentframe], friend.x, friend.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(doll_balloon, quads[friend.currentframe], friend.x, friend.y, 0, -1, 1, friend.width)
+				end
 			else
-				love.graphics.setColor(150, 150, 150)
-				love.graphics.rectangle("fill", 440, 25, 50, 50)
-			end
-			love.graphics.print(name, 0, 0)
-		end
-	end
-	--draw player's items
-	for i, item in ipairs(player.items) do
-		love.graphics.setColor(255, 255, 0)
-		love.graphics.rectangle("fill", 500 + (i * 30), 50, 20, 20)
-	end
-	--draw doors
-	love.graphics.setColor(255, 255, 255)
-	if starti - 1 >= 0 and grid[starti - 1][startj].roomtype == "room" then
-		love.graphics.draw(door_left, 10, 225)
-	end
-	if starti + 1 <= 6 and grid[starti + 1][startj].roomtype == "room" then
-		love.graphics.draw(door_right, love.graphics.getWidth() - 30, 225)
-	end
-	if startj - 1 >= 0 and grid[starti][startj - 1].roomtype == "room" then
-		love.graphics.draw(door_up,(love.graphics.getWidth() / 2) - 60, 90)
-	end
-	if startj + 1 <= 6 and grid[starti][startj + 1].roomtype == "room" then
-		love.graphics.draw(door_down, (love.graphics.getWidth() / 2) - 60, 440)
-	end
-	--draw boss door
-	love.graphics.setColor(100, 100, 100)
-	if starti - 1 >= 0 and grid[starti - 1][startj].roomtype == "boss" then
-		love.graphics.rectangle("fill", 10, 225, 20, 100)
-	end
-	if starti + 1 <= 6 and grid[starti + 1][startj].roomtype == "boss" then
-		love.graphics.rectangle("fill", love.graphics.getWidth() - 30, 225, 20, 100)
-	end
-	if startj - 1 >= 0 and grid[starti][startj - 1].roomtype == "boss" then
-		love.graphics.rectangle("fill", (love.graphics.getWidth() / 2) - 60, 90, 100, 20)
-	end
-	if startj + 1 <= 6 and grid[starti][startj + 1].roomtype == "boss" then
-		love.graphics.rectangle("fill", (love.graphics.getWidth() / 2) - 60, 440, 100, 20)
-	end
-	--draw shop door
-	love.graphics.setColor(255, 255, 0)
-	if starti - 1 >= 0 and grid[starti - 1][startj].roomtype == "shop" then
-		love.graphics.rectangle("fill", 10, 225, 20, 100)
-	end
-	if starti + 1 <= 6 and grid[starti + 1][startj].roomtype == "shop" then
-		love.graphics.rectangle("fill", love.graphics.getWidth() - 30, 225, 20, 100)
-	end
-	if startj - 1 >= 0 and grid[starti][startj - 1].roomtype == "shop" then
-		love.graphics.rectangle("fill", (love.graphics.getWidth() / 2) - 60, 90, 100, 20)
-	end
-	if startj + 1 <= 6 and grid[starti][startj + 1].roomtype == "shop" then
-		love.graphics.rectangle("fill", (love.graphics.getWidth() / 2) - 60, 440, 100, 20)
-	end
-	--draw player
-	love.graphics.setColor(255, 255, 255)
-	local x_scale
-	if sword.button == false then
-		if player.facing == "right" then
-			love.graphics.draw(player.image, quads[player.currentframe], player.x, player.y, 0, 1, 1, 0)
-		else
-			love.graphics.draw(player.image, quads[player.currentframe], player.x, player.y, 0, -1, 1, player.width)
-		end
-	else
-		if sword.dir == "right" then
-			love.graphics.draw(player.attackimage_lr, attackQuads[player.currentframe], player.x, player.y, 0, 1, 1, 0)
-		end
-		if sword.dir == "left" then
-			love.graphics.draw(player.attackimage_lr, attackQuads[player.currentframe], player.x, player.y, 0, -1, 1, player.width)
-		end
-		if sword.dir == "up" then
-			if player.facing == "right" then
-				love.graphics.draw(player.attackimage_up, attackQuads[player.currentframe], player.x, player.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(player.attackimage_up, attackQuads[player.currentframe], player.x, player.y, 0, -1, 1, player.width)
+				love.graphics.setColor(0, 150, 150, 50)
+				love.graphics.rectangle("fill", friend.x, friend.y, friend.width, friend.height)
 			end
 		end
-		if sword.dir == "down" then
-			if player.facing == "right" then
-				love.graphics.draw(player.attackimage_dn, attackQuads[player.currentframe], player.x, player.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(player.attackimage_dn, attackQuads[player.currentframe], player.x, player.y, 0, -1, 1, player.width)
-			end
-		end
-	end
-	--draw enemies
-	if grid[starti][startj].enemies ~= nil then
-		for i, enemy in ipairs(grid[starti][startj].enemies) do
-			love.graphics.setColor(255, 255, 255)
-			if enemy.name == "slime" then
-				if enemy.facing == "right" then
-					love.graphics.draw(slime, quads[enemy.currentframe], enemy.x, enemy.y, 0, 1, 1, 0)
-				else
-					love.graphics.draw(slime, quads[enemy.currentframe], enemy.x, enemy.y, 0, -1, 1, enemy.width)
-				end
-			elseif enemy.name == "mini-slime" then
-				if enemy.facing == "right" then
-					love.graphics.draw(minislime, miniquads[enemy.currentframe], enemy.x, enemy.y, 0, 1, 1, 0)
-				else
-					love.graphics.draw(minislime, miniquads[enemy.currentframe], enemy.x, enemy.y, 0, -1, 1, enemy.width)
-				end
-			elseif enemy.name == "lasermouth" then
-				love.graphics.setColor(0, 255, 0)
-				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
-				if enemy.counter > 60 then
-					love.graphics.setColor(255, 0, 0)
-					if enemy.attackdir == "up" then
-						love.graphics.rectangle("fill", enemy.x, 100, enemy.width, enemy.y - 100)
-					elseif enemy.attackdir == "down" then
-						love.graphics.rectangle("fill", enemy.x, enemy.y + enemy.height, enemy.width, 450 - (enemy.y + enemy.height))
-					end
-				end
-			elseif enemy.name == "faker" then
-				love.graphics.setColor(255, 255, 255)					
-				if enemy.counter > 0 and enemy.counter < 100 then
-					love.graphics.draw(faker, blockquads[enemy.currentframe], enemy.x, enemy.y)
-				else
-					love.graphics.draw(block_image_1, blockquads[rng:random(1, 2)], enemy.x, enemy.y)
-				end
-			elseif enemy.name == "boss" then
-				if enemy.air == true then
-					love.graphics.setColor(10, 10, 10, 200)
-					love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
-				else
+		--draw map
+		for i = 0, 6 do
+			for j = 0, 6 do
+				if grid[i][j].current == true then
+					love.graphics.setColor(255,0,0)
+					love.graphics.rectangle("fill", 20 + (30 * i), 10 + (10 * j), 30, 10)
+				elseif grid[i][j].roomtype == "room" then
+					love.graphics.setColor(255, 255, 255)
+					love.graphics.rectangle("fill", 20 + (30 * i), 10 + (10 * j), 30, 10)
+				elseif grid[i][j].roomtype == "boss" then
 					love.graphics.setColor(0, 0, 255)
-					love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+					love.graphics.rectangle("fill", 20 + (30 * i), 10 + (10 * j), 30, 10)
+				elseif grid[i][j].roomtype == "shop" then
+					love.graphics.setColor(255, 255, 0)
+					love.graphics.rectangle("fill", 20 + (30 * i), 10 + (10 * j), 30, 10)
+				else
+					love.graphics.setColor(0, 0, 0)
+					love.graphics.rectangle("line", 20 + (30 * i), 10 + (10 * j), 30, 10)
 				end
-				for i, shot in ipairs(enemy.shots) do
-					love.graphics.setColor(255, 0, 0)
-					love.graphics.rectangle("fill", shot.x, shot.y, shot.width, shot.height)
+			end
+		end
+		--draw player health
+		for i = 0, player.maxhealth - 1 do
+			love.graphics.setColor(255, 255, 255)
+			love.graphics.draw(emptyheart, 300 + (i * 30), 30)
+		end
+		for i, item in ipairs(player.items) do
+			if item.health ~= nil then
+				love.graphics.setColor(200, 200, 200)
+				love.graphics.rectangle("fill", 300 + (30 * (player.maxhealth)) + ((item.health - 1) * 30), 30, 20, 20)
+			end
+		end
+		for i = 0, player.currenthealth - 1 do
+			love.graphics.setColor(255, 255, 255)
+			love.graphics.draw(fullheart, 300 + (i * 30), 30)
+		end
+		--draw player's quarters
+		love.graphics.setColor(255, 255, 255)
+		love.graphics.setFont(font)
+		love.graphics.print(string.format("$%.2f", player.quarters), 300, 10)
+		--draw usable item
+		love.graphics.setColor(150, 150, 150)
+		love.graphics.rectangle("line", 430, 15, 70, 75)
+		if #player.items > 0 then
+			if player.items[player.itemselect].name ~= nil then
+				local name = player.items[player.itemselect].name
+				love.graphics.setColor(255, 255, 255)
+				--sword items
+				if name == "Toy Sword" then
+					love.graphics.draw(sworditem, 440, 25)
+				elseif name == "Pizza Cutter" then
+					love.graphics.draw(pizzasworditem, 440, 25)
+				elseif name == "Bad Teddy" then
+					love.graphics.draw(bearsworditem, 440, 25)
+				elseif name == "Dagger Girl" then
+					love.graphics.draw(dollsworditem, 440, 25)
+				elseif name == "Robo-Sword" then
+					love.graphics.draw(robotsworditem, 440, 25)
+				elseif name == "Candy Cane Sword" then
+					love.graphics.draw(candysworditem, 440, 25)
+				elseif name == "Pork Sword" then
+					love.graphics.draw(pigsworditem, 440, 25)
+				elseif name == "Clockstopper" then
+					love.graphics.draw(clocksworditem, 440, 25)
+				elseif name == "Magic Blade" then
+					love.graphics.draw(eightballsworditem, 440, 25)
+				elseif name == "Spiky Balloon" then
+					love.graphics.draw(balloonsworditem, 440, 25)
+				--robot items
+				elseif name == "Toy Robot" then
+					love.graphics.draw(robotitem, 440, 25)
+				elseif name == "Gamer M8" then
+					love.graphics.draw(robot8ballitem, 440, 25)
+				elseif name == "Helium Robot" then
+					love.graphics.draw(robotballoonitem, 440, 25)
+				elseif name == "Robo-Bear" then
+					love.graphics.draw(bearrobotitem, 440, 25)
+				elseif name == "Candy Mecha" then
+					love.graphics.draw(robotcandyitem, 440, 25)
+				elseif name == "Vintage Robot" then
+					love.graphics.draw(robotclockitem, 440, 25)
+				elseif name == "The Third Robot" then
+					love.graphics.draw(dollrobotitem, 440, 25)
+				elseif name == "Digital Bank" then
+					love.graphics.draw(pigrobotitem, 440, 25)
+				elseif name == "Pizza Robot" then
+					love.graphics.draw(pizzarobotitem, 440, 25)
+				--pizza items
+				elseif name == "Pizza" then
+					love.graphics.draw(pizzaitem, 440, 25)
+				elseif name == "Mystery Meat" then
+					love.graphics.draw(eightballpizzaitem, 440, 25)
+				elseif name == "Pizza Balloon" then
+					love.graphics.draw(pizzaballoonitem, 440, 25)
+				elseif name == "Pizza Bear" then
+					love.graphics.draw(bearpizzaitem, 440, 25)
+				elseif name == "Pizza Candy" then
+					love.graphics.draw(pizzacandyitem, 440, 25)
+				elseif name == "Fossilized Pizza" then
+					love.graphics.draw(pizzaclockitem, 440, 25)
+				elseif name == "Pizza Delivery" then
+					love.graphics.draw(dollpizzaitem, 440, 25)
+				elseif name == "Pizza Bank" then
+					love.graphics.draw(pigpizzaitem, 440, 25)
+				--pig items
+				elseif name == "Piggy Bank" then
+					love.graphics.draw(pigitem, 440, 25)
+				elseif name == "8-Ball Pig" then
+					love.graphics.draw(pig8ballitem, 440, 25)
+				elseif name == "Piggy Balloon" then
+					love.graphics.draw(pigballoonitem, 440, 25)
+				elseif name == "Piggy Bear" then
+					love.graphics.draw(pigbearitem, 440, 25)
+				elseif name == "Gumball Machine" then
+					love.graphics.draw(pigcandyitem, 440, 25)
+				elseif name == "Business Venture" then
+					love.graphics.draw(pigclockitem, 440, 25)
+				elseif name == "Ms. Swine" then
+					love.graphics.draw(pigdollitem, 440, 25)
+				--doll items
+				elseif name == "Doll" then
+					love.graphics.draw(dollitem, 440, 25)
+				elseif name == "Fortune Teller" then
+					love.graphics.draw(doll8ballitem, 440, 25)
+				elseif name == "Hot Air Balloon" then
+					love.graphics.draw(dollballoonitem, 440, 25)
+				elseif name == "Goldilocks" then
+					love.graphics.draw(beardollitem, 440, 25)
+				elseif name == "Candy Girl" then
+					love.graphics.draw(dollcandyitem, 440, 25)
+				elseif name == "Medusa" then
+					love.graphics.draw(dollclockitem, 440, 25)
+				--clock items
+				elseif name == "Stopwatch" then
+					love.graphics.draw(clockitem, 440, 25)
+				elseif name == "Strange Clock" then
+					love.graphics.draw(eightballclockitem, 440, 25)
+				elseif name == "Stopwatch Balloon" then
+					love.graphics.draw(clockballoonitem, 440, 25)
+				elseif name == "Synchronursa" then
+					love.graphics.draw(bearclockitem, 440, 25)
+				elseif name == "Candy Time!" then
+					love.graphics.draw(candyclockitem, 440, 25)
+				--candy items
+				elseif name == "Candy" then
+					love.graphics.draw(candyitem, 440, 25)
+				elseif name == "Mystery Flavor" then
+					love.graphics.draw(eightballcandyitem, 440, 25)
+				elseif name == "Bubble Gum" then
+					love.graphics.draw(candyballoonitem, 440, 25)
+				elseif name == "Candy Bear" then
+					love.graphics.draw(bearcandyitem, 440, 25)
+				--bear items
+				elseif name == "Teddy Bear" then
+					love.graphics.draw(bearitem, 440, 25)
+				elseif name == "Mystic Bear" then
+					love.graphics.draw(bear8ballitem, 440, 25)
+				elseif name == "Bear Balloon" then
+					love.graphics.draw(bearballoonitem, 440, 25)
+				--balloon items
+				elseif name == "Balloon" then
+					love.graphics.draw(balloonitem, 440, 25)
+				elseif name == "8-Ball Balloon" then
+					love.graphics.draw(eightballballoonitem, 440, 25)
+				--8ball items
+				elseif name == "8-Ball" then
+					love.graphics.draw(eightballitem, 440, 25)
+				else
+					love.graphics.setColor(150, 150, 150)
+					love.graphics.rectangle("fill", 440, 25, 50, 50)
 				end
-				love.graphics.print(enemy.counter, 0, 20)
-			elseif enemy.name == "boss2" then
-				love.graphics.setColor(255, 0, 255)
-				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
-			elseif enemy.name == "mini-boss2" then
-				love.graphics.setColor(0, 255, 255)
-				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
-			elseif enemy.name == "boss4" then
-				if enemy.air == true then
-					love.graphics.setColor(10, 10, 10, 200)
+				love.graphics.print(name, 0, 0)
+			end
+		end
+		--draw player's items
+		for i, item in ipairs(player.items) do
+			love.graphics.setColor(255, 255, 0)
+			love.graphics.rectangle("fill", 500 + (i * 30), 50, 20, 20)
+		end
+		--draw doors
+		love.graphics.setColor(255, 255, 255)
+		if starti - 1 >= 0 and grid[starti - 1][startj].roomtype == "room" then
+			love.graphics.draw(door_left, 10, 225)
+		end
+		if starti + 1 <= 6 and grid[starti + 1][startj].roomtype == "room" then
+			love.graphics.draw(door_right, love.graphics.getWidth() - 30, 225)
+		end
+		if startj - 1 >= 0 and grid[starti][startj - 1].roomtype == "room" then
+			love.graphics.draw(door_up,(love.graphics.getWidth() / 2) - 60, 90)
+		end
+		if startj + 1 <= 6 and grid[starti][startj + 1].roomtype == "room" then
+			love.graphics.draw(door_down, (love.graphics.getWidth() / 2) - 60, 440)
+		end
+		--draw boss door
+		love.graphics.setColor(100, 100, 100)
+		if starti - 1 >= 0 and grid[starti - 1][startj].roomtype == "boss" then
+			love.graphics.rectangle("fill", 10, 225, 20, 100)
+		end
+		if starti + 1 <= 6 and grid[starti + 1][startj].roomtype == "boss" then
+			love.graphics.rectangle("fill", love.graphics.getWidth() - 30, 225, 20, 100)
+		end
+		if startj - 1 >= 0 and grid[starti][startj - 1].roomtype == "boss" then
+			love.graphics.rectangle("fill", (love.graphics.getWidth() / 2) - 60, 90, 100, 20)
+		end
+		if startj + 1 <= 6 and grid[starti][startj + 1].roomtype == "boss" then
+			love.graphics.rectangle("fill", (love.graphics.getWidth() / 2) - 60, 440, 100, 20)
+		end
+		--draw shop door
+		love.graphics.setColor(255, 255, 0)
+		if starti - 1 >= 0 and grid[starti - 1][startj].roomtype == "shop" then
+			love.graphics.rectangle("fill", 10, 225, 20, 100)
+		end
+		if starti + 1 <= 6 and grid[starti + 1][startj].roomtype == "shop" then
+			love.graphics.rectangle("fill", love.graphics.getWidth() - 30, 225, 20, 100)
+		end
+		if startj - 1 >= 0 and grid[starti][startj - 1].roomtype == "shop" then
+			love.graphics.rectangle("fill", (love.graphics.getWidth() / 2) - 60, 90, 100, 20)
+		end
+		if startj + 1 <= 6 and grid[starti][startj + 1].roomtype == "shop" then
+			love.graphics.rectangle("fill", (love.graphics.getWidth() / 2) - 60, 440, 100, 20)
+		end
+		--draw player
+		love.graphics.setColor(255, 255, 255)
+		local x_scale
+		if sword.button == false then
+			if player.facing == "right" then
+				love.graphics.draw(player.image, quads[player.currentframe], player.x, player.y, 0, 1, 1, 0)
+			else
+				love.graphics.draw(player.image, quads[player.currentframe], player.x, player.y, 0, -1, 1, player.width)
+			end
+		else
+			if sword.dir == "right" then
+				love.graphics.draw(player.attackimage_lr, attackQuads[player.currentframe], player.x, player.y, 0, 1, 1, 0)
+			end
+			if sword.dir == "left" then
+				love.graphics.draw(player.attackimage_lr, attackQuads[player.currentframe], player.x, player.y, 0, -1, 1, player.width)
+			end
+			if sword.dir == "up" then
+				if player.facing == "right" then
+					love.graphics.draw(player.attackimage_up, attackQuads[player.currentframe], player.x, player.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(player.attackimage_up, attackQuads[player.currentframe], player.x, player.y, 0, -1, 1, player.width)
+				end
+			end
+			if sword.dir == "down" then
+				if player.facing == "right" then
+					love.graphics.draw(player.attackimage_dn, attackQuads[player.currentframe], player.x, player.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(player.attackimage_dn, attackQuads[player.currentframe], player.x, player.y, 0, -1, 1, player.width)
+				end
+			end
+		end
+		--draw enemies
+		if grid[starti][startj].enemies ~= nil then
+			for i, enemy in ipairs(grid[starti][startj].enemies) do
+				love.graphics.setColor(255, 255, 255)
+				if enemy.name == "slime" then
+					if enemy.facing == "right" then
+						love.graphics.draw(slime, quads[enemy.currentframe], enemy.x, enemy.y, 0, 1, 1, 0)
+					else
+						love.graphics.draw(slime, quads[enemy.currentframe], enemy.x, enemy.y, 0, -1, 1, enemy.width)
+					end
+				elseif enemy.name == "mini-slime" then
+					if enemy.facing == "right" then
+						love.graphics.draw(minislime, miniquads[enemy.currentframe], enemy.x, enemy.y, 0, 1, 1, 0)
+					else
+						love.graphics.draw(minislime, miniquads[enemy.currentframe], enemy.x, enemy.y, 0, -1, 1, enemy.width)
+					end
+				elseif enemy.name == "lasermouth" then
+					love.graphics.setColor(0, 255, 0)
 					love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+					if enemy.counter > 60 then
+						love.graphics.setColor(255, 0, 0)
+						if enemy.attackdir == "up" then
+							love.graphics.rectangle("fill", enemy.x, 100, enemy.width, enemy.y - 100)
+						elseif enemy.attackdir == "down" then
+							love.graphics.rectangle("fill", enemy.x, enemy.y + enemy.height, enemy.width, 450 - (enemy.y + enemy.height))
+						end
+					end
+				elseif enemy.name == "faker" then
+					love.graphics.setColor(255, 255, 255)					
+					if enemy.counter > 0 and enemy.counter < 100 then
+						love.graphics.draw(faker, blockquads[enemy.currentframe], enemy.x, enemy.y)
+					else
+						love.graphics.draw(block_image_1, blockquads[rng:random(1, 2)], enemy.x, enemy.y)
+					end
+				elseif enemy.name == "boss" then
+					if enemy.air == true then
+						love.graphics.setColor(10, 10, 10, 200)
+						love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+					else
+						love.graphics.setColor(0, 0, 255)
+						love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+					end
+					for i, shot in ipairs(enemy.shots) do
+						love.graphics.setColor(255, 0, 0)
+						love.graphics.rectangle("fill", shot.x, shot.y, shot.width, shot.height)
+					end
+					love.graphics.print(enemy.counter, 0, 20)
+				elseif enemy.name == "boss2" then
+					love.graphics.setColor(255, 0, 255)
+					love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+				elseif enemy.name == "mini-boss2" then
+					love.graphics.setColor(0, 255, 255)
+					love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+				elseif enemy.name == "boss4" then
+					if enemy.air == true then
+						love.graphics.setColor(10, 10, 10, 200)
+						love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+					else
+						love.graphics.setColor(0, 255, 0)
+						love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+					end
+					for i, shot in ipairs(enemy.shots) do
+						love.graphics.setColor(255, 0, 0)
+						love.graphics.rectangle("fill", shot.x, shot.y, shot.width, shot.height)
+					end
+				elseif enemy.name == "boss5" then
+					love.graphics.setColor(0, 255, 0)
+					love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+					for i, shot in ipairs(enemy.shots) do
+						love.graphics.setColor(255, 0, 0)
+						love.graphics.rectangle("fill", shot.x, shot.y, shot.width, shot.height)
+					end
+					for i, laser in ipairs(enemy.lasers) do
+						love.graphics.setColor(255, 0, 0)
+						love.graphics.rectangle("fill", laser.x, laser.y, laser.width, laser.height)
+					end
 				else
 					love.graphics.setColor(0, 255, 0)
 					love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
+					if enemy.counter ~= nil then
+						love.graphics.print(enemy.counter, 0, 20)
+					end
 				end
-				for i, shot in ipairs(enemy.shots) do
+			end
+		end
+		--draw sword
+		love.graphics.setColor(255, 255, 0)
+		if sword.button == true then
+			if sword.dir == "right" then
+				love.graphics.draw(sword.imagelr, sword.lrquads[sword.currentframe], sword.x, sword.y, 0, 1, 1, 0)
+			end
+			if sword.dir == "left" then
+				love.graphics.draw(sword.imagelr, sword.lrquads[sword.currentframe], sword.x, sword.y, 0, -1, 1, sword.width)
+			end
+			if sword.dir == "up" then
+				if player.facing == "right" then
+					love.graphics.draw(sword.imageup, sword.upquads[sword.currentframe], sword.x, sword.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(sword.imageup, sword.upquads[sword.currentframe], sword.x, sword.y, 0, -1, 1, sword.width)
+				end
+			end
+			if sword.dir == "down" then
+				if player.facing == "right" then
+					love.graphics.draw(sword.imagedn, sword.upquads[sword.currentframe], sword.x, sword.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(sword.imagedn, sword.upquads[sword.currentframe], sword.x, sword.y, 0, -1, 1, sword.width)
+				end
+			end
+		end
+		--draw items
+		if grid[starti][startj].items ~= nil then
+			for i, item in ipairs(grid[starti][startj].items) do
+				if item.name == "Heart" then
 					love.graphics.setColor(255, 0, 0)
-					love.graphics.rectangle("fill", shot.x, shot.y, shot.width, shot.height)
+					love.graphics.rectangle("fill", item.x, item.y, item.width, item.height)
 				end
-			elseif enemy.name == "boss5" then
-				love.graphics.setColor(0, 255, 0)
-				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
-				for i, shot in ipairs(enemy.shots) do
-					love.graphics.setColor(255, 0, 0)
-					love.graphics.rectangle("fill", shot.x, shot.y, shot.width, shot.height)
+				if item.name == "Quarter" then
+					love.graphics.setColor(200, 200, 200)
+					love.graphics.rectangle("fill", item.x, item.y, item.width, item.height)
 				end
-				for i, laser in ipairs(enemy.lasers) do
-					love.graphics.setColor(255, 0, 0)
-					love.graphics.rectangle("fill", laser.x, laser.y, laser.width, laser.height)
+				if item.name == "Pizza" then
+					love.graphics.setColor(255, 255, 255)
+					love.graphics.draw(pizzaitem, item.x, item.y)
 				end
-			else
-				love.graphics.setColor(0, 255, 0)
-				love.graphics.rectangle("fill", enemy.x, enemy.y, enemy.width, enemy.height)
-				if enemy.counter ~= nil then
-					love.graphics.print(enemy.counter, 0, 20)
+				if item.name == "Teddy Bear" then
+					love.graphics.setColor(255, 255, 255)
+					love.graphics.draw(bearitem, item.x, item.y)
 				end
-			end
-		end
-	end
-	--draw sword
-	love.graphics.setColor(255, 255, 0)
-	if sword.button == true then
-		if sword.dir == "right" then
-			love.graphics.draw(sword.imagelr, sword.lrquads[sword.currentframe], sword.x, sword.y, 0, 1, 1, 0)
-		end
-		if sword.dir == "left" then
-			love.graphics.draw(sword.imagelr, sword.lrquads[sword.currentframe], sword.x, sword.y, 0, -1, 1, sword.width)
-		end
-		if sword.dir == "up" then
-			if player.facing == "right" then
-				love.graphics.draw(sword.imageup, sword.upquads[sword.currentframe], sword.x, sword.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(sword.imageup, sword.upquads[sword.currentframe], sword.x, sword.y, 0, -1, 1, sword.width)
-			end
-		end
-		if sword.dir == "down" then
-			if player.facing == "right" then
-				love.graphics.draw(sword.imagedn, sword.upquads[sword.currentframe], sword.x, sword.y, 0, 1, 1, 0)
-			else
-				love.graphics.draw(sword.imagedn, sword.upquads[sword.currentframe], sword.x, sword.y, 0, -1, 1, sword.width)
-			end
-		end
-	end
-	--draw items
-	if grid[starti][startj].items ~= nil then
-		for i, item in ipairs(grid[starti][startj].items) do
-			if item.name == "Heart" then
-				love.graphics.setColor(255, 0, 0)
-				love.graphics.rectangle("fill", item.x, item.y, item.width, item.height)
-			end
-			if item.name == "Quarter" then
-				love.graphics.setColor(200, 200, 200)
-				love.graphics.rectangle("fill", item.x, item.y, item.width, item.height)
-			end
-			if item.name == "Pizza" then
-				love.graphics.setColor(255, 255, 255)
-				love.graphics.draw(pizzaitem, item.x, item.y)
-			end
-			if item.name == "Teddy Bear" then
-				love.graphics.setColor(255, 255, 255)
-				love.graphics.draw(bearitem, item.x, item.y)
-			end
-			if item.name == "Piggy Bank" then
-				love.graphics.setColor(255, 255, 255)
-				love.graphics.draw(pigitem, item.x, item.y)
-			end
-			if item.name == "Toy Robot" then
-				love.graphics.setColor(255, 255, 255)
-				love.graphics.draw(robotitem, item.x, item.y)
-			end
-			if item.name == "Toy Sword" then
-				love.graphics.setColor(255, 255, 255)
-				love.graphics.draw(sworditem, item.x, item.y)
-			end
-			if item.name == "Doll" then
-				love.graphics.setColor(255, 255, 255)
-				love.graphics.draw(dollitem, item.x, item.y)
-			end
-			if item.name == "Candy" then
-				love.graphics.setColor(255, 255, 255)
-				love.graphics.draw(candyitem, item.x, item.y)
-			end
-			if item.name == "Stopwatch" then
-				love.graphics.setColor(255, 255, 255)
-				love.graphics.draw(clockitem, item.x, item.y)
-			end
-			if item.name == "Balloon" then
-				love.graphics.setColor(255, 255, 255)
-				love.graphics.draw(balloonitem, item.x, item.y)
-			end
-			if item.name == "8-Ball" then
-				love.graphics.setColor(255, 255, 255)
-				love.graphics.draw(eightballitem, item.x, item.y)
-			end
-			if item.name == "Shop" then
-				love.graphics.setColor(255, 255, 0)
-				love.graphics.rectangle("fill", item.x, item.y, item.width, item.height)
-			end
-			if item.name == "nextlevel" then
-				love.graphics.setColor(0, 0, 0)
-				love.graphics.rectangle("fill", item.x, item.y, item.width, item.height)
+				if item.name == "Piggy Bank" then
+					love.graphics.setColor(255, 255, 255)
+					love.graphics.draw(pigitem, item.x, item.y)
+				end
+				if item.name == "Toy Robot" then
+					love.graphics.setColor(255, 255, 255)
+					love.graphics.draw(robotitem, item.x, item.y)
+				end
+				if item.name == "Toy Sword" then
+					love.graphics.setColor(255, 255, 255)
+					love.graphics.draw(sworditem, item.x, item.y)
+				end
+				if item.name == "Doll" then
+					love.graphics.setColor(255, 255, 255)
+					love.graphics.draw(dollitem, item.x, item.y)
+				end
+				if item.name == "Candy" then
+					love.graphics.setColor(255, 255, 255)
+					love.graphics.draw(candyitem, item.x, item.y)
+				end
+				if item.name == "Stopwatch" then
+					love.graphics.setColor(255, 255, 255)
+					love.graphics.draw(clockitem, item.x, item.y)
+				end
+				if item.name == "Balloon" then
+					love.graphics.setColor(255, 255, 255)
+					love.graphics.draw(balloonitem, item.x, item.y)
+				end
+				if item.name == "8-Ball" then
+					love.graphics.setColor(255, 255, 255)
+					love.graphics.draw(eightballitem, item.x, item.y)
+				end
+				if item.name == "Shop" then
+					love.graphics.setColor(255, 255, 0)
+					love.graphics.rectangle("fill", item.x, item.y, item.width, item.height)
+				end
+				if item.name == "nextlevel" then
+					love.graphics.setColor(0, 0, 0)
+					love.graphics.rectangle("fill", item.x, item.y, item.width, item.height)
+				end
 			end
 		end
 	end
@@ -2304,6 +2324,13 @@ function love.draw(dt)
 		love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
 		love.graphics.setColor(255, 255, 255, bgalpha)
 		love.graphics.print("Press ENTER to start.",  250, love.graphics.getHeight() / 2)
+	end
+	if gamemode == "items" then
+		if love.filesystem.exists('items.lua') then
+			for i, line in ipairs(data) do
+				love.graphics.print(line, 0, i * 10)
+			end
+		end
 	end
 end
 
@@ -2549,6 +2576,14 @@ function love.keypressed(key)
 		if key == "return" then
 			bgtrigger = true
 		end
+		if key == "i" then
+			gamemode = "items"
+		end
+	end
+	if gamemode == "items" then
+		if key == "return" then
+			gamemode = "start"
+		end
 	end
 end
 
@@ -2610,7 +2645,7 @@ function createLevel()
 	--table.insert(grid[starti][startj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, enemies = {}, xDir = "left", yDir = "up", check = true, counter = 250, enemycount = 3, frozen = false, frozentimer = 0})
 	--table.insert(grid[starti][startj].enemies, {name = "boss3", x = 200, y = 150, width = 60, height = 60, health = 25, nextDir = "up", speed = 4, frozen = false, frozentimer = 0})
 	--table.insert(grid[starti][startj].enemies, {name = "boss4", x = 200, y = 150, width = 100, height = 100, health = 25, counter = 0, air = false, shots = {}, rush = false, speed = 4, angle = 0, frozen = false, frozentimer = 0})
-	table.insert(grid[starti][startj].enemies, {name = "boss5", x = 200, y = 150, width = 150, height = 150, health = 100, counter = 0, shots = {}, speed = .25, frozen = false, frozentimer = 0, nextDir = "left", rush = false, lasers = {}})
+	--table.insert(grid[starti][startj].enemies, {name = "boss5", x = 200, y = 150, width = 150, height = 150, health = 100, counter = 0, shots = {}, speed = .25, frozen = false, frozentimer = 0, nextDir = "left", rush = false, lasers = {}})
 	--chooose random room and make it the shop room
 	local shopcheck = false
 	while shopcheck == false do
@@ -2748,11 +2783,13 @@ function merge(selection1, selection2)
 	if (item1 == "Teddy Bear" and item2 == "Toy Sword") or
 	(item2 == "Teddy Bear" and item1 == "Toy Sword") then
 		item = {name = "Bad Teddy", sell = 1, x = player.x, y = player.y, width = 50, height = 50, health = 2}
+		data[2] = "bearsworditem = true"
 		flag = true
 	end
 	if (item1 == "Pizza" and item2 == "Toy Sword") or
 	(item2 == "Pizza" and item1 == "Toy Sword") then
 		item = {name = "Pizza Cutter", sell = 1, x = player.x, y = player.y, width = 50, height = 50}
+		data[1] = "pizzasworditem = true"
 		flag = true
 	end
 	if (item1 == "Toy Robot" and item2 == "Toy Sword") or
@@ -3787,5 +3824,16 @@ function takedamage(enemy)
 			player.currenthealth = player.currenthealth - 1
 		end
 		player.button = true
+	end
+end
+
+--quit
+function love.quit()
+	for i, line in ipairs(data) do
+		if i == 1 then
+			love.filesystem.write('items.lua', line .."\n")
+		else
+			love.filesystem.append('items.lua', line .. "\n")
+		end
 	end
 end
