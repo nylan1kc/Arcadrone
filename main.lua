@@ -163,7 +163,6 @@ function love.load()
 		number = 1,
 		size = 10
 	}
-	--createLevel()
 	player = {
 		x = 200,
 		y = 200,
@@ -2640,8 +2639,8 @@ function createLevel()
 		end
 	end
 	--create boss
-	grid[starti][startj] = {roomtype = "boss", completed = false, enemies = {}, items = {button = false}}
-	--table.insert(grid[starti][startj].enemies, {name = "boss", x = 200, y = 150, width = 150, height = 150, health = 25, button = false, air = false, jumps = 3, shots = {}, counter = 0, frozen = false, frozentimer = 0})
+	grid[bossi][bossj] = {roomtype = "boss", completed = false, enemies = {}, items = {button = false}}
+	table.insert(grid[bossi][bossj].enemies, {name = "boss", x = 200, y = 150, width = 150, height = 150, health = 25, button = false, air = false, jumps = 3, shots = {}, counter = 0, frozen = false, frozentimer = 0})
 	--table.insert(grid[starti][startj].enemies, {name = "boss2", x = 200, y = 150, width = 150, height = 150, health = 25, enemies = {}, xDir = "left", yDir = "up", check = true, counter = 250, enemycount = 3, frozen = false, frozentimer = 0})
 	--table.insert(grid[starti][startj].enemies, {name = "boss3", x = 200, y = 150, width = 60, height = 60, health = 25, nextDir = "up", speed = 4, frozen = false, frozentimer = 0})
 	--table.insert(grid[starti][startj].enemies, {name = "boss4", x = 200, y = 150, width = 100, height = 100, health = 25, counter = 0, air = false, shots = {}, rush = false, speed = 4, angle = 0, frozen = false, frozentimer = 0})
