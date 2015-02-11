@@ -6,8 +6,8 @@ function love.load()
 	
 	if not love.filesystem.exists('items.lua') then 
 		love.filesystem.newFile('items.lua')
-		love.filesystem.append('items.lua', 'pizzasworditem = false\n')
-		love.filesystem.append('items.lua', 'bearsworditem = false\n')
+		love.filesystem.append('items.lua', 'false\n')
+		love.filesystem.append('items.lua', 'true\n')
 	end
 	
 	for lines in love.filesystem.lines('items.lua') do
@@ -2326,8 +2326,11 @@ function love.draw(dt)
 	end
 	if gamemode == "items" then
 		if love.filesystem.exists('items.lua') then
-			for i, line in ipairs(data) do
-				love.graphics.print(line, 0, i * 10)
+			if data[1] == "true" then
+				love.graphics.draw(pizzasworditem, 0, 0)
+			end
+			if data[2] == "true" then
+				love.graphics.draw(bearsworditem, 50, 0)
 			end
 		end
 	end
@@ -2782,13 +2785,13 @@ function merge(selection1, selection2)
 	if (item1 == "Teddy Bear" and item2 == "Toy Sword") or
 	(item2 == "Teddy Bear" and item1 == "Toy Sword") then
 		item = {name = "Bad Teddy", sell = 1, x = player.x, y = player.y, width = 50, height = 50, health = 2}
-		data[2] = "bearsworditem = true"
+		data[2] = "true"
 		flag = true
 	end
 	if (item1 == "Pizza" and item2 == "Toy Sword") or
 	(item2 == "Pizza" and item1 == "Toy Sword") then
 		item = {name = "Pizza Cutter", sell = 1, x = player.x, y = player.y, width = 50, height = 50}
-		data[1] = "pizzasworditem = true"
+		data[1] = "true"
 		flag = true
 	end
 	if (item1 == "Toy Robot" and item2 == "Toy Sword") or
