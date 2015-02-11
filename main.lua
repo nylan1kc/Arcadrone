@@ -282,6 +282,9 @@ function love.load()
 		height = 150,
 		selected = false
 	}
+	
+	itemScreenSelectionX = 0
+	itemScreenSelectionY = 0
 end
 
 function love.update(dt)
@@ -2324,13 +2327,33 @@ function love.draw(dt)
 		love.graphics.setColor(255, 255, 255, bgalpha)
 		love.graphics.print("Press ENTER to start.",  250, love.graphics.getHeight() / 2)
 	end
+	--item collection screen
 	if gamemode == "items" then
+		love.graphics.rectangle("line", itemScreenSelectionX * 50, itemScreenSelectionY * 50, 50, 50)
 		if love.filesystem.exists('items.lua') then
 			if data[1] == "true" then
-				love.graphics.draw(pizzasworditem, 0, 0)
+				love.graphics.draw(eightballballoonitem, 50, 0)
+				love.graphics.draw(eightballballoonitem, 0, 50)
+				if itemScreenSelectionX == 1 and itemScreenSelectionY == 0 or itemScreenSelectionY == 1 and itemScreenSelectionX == 0 then
+					love.graphics.draw(eightballballoonitem, 570, 100)
+					love.graphics.printf("8-Ball Balloon", 550, 160, 90, "center")
+				end
 			end
-			if data[2] == "true" then
-				love.graphics.draw(bearsworditem, 50, 0)
+			if data[24] == "true" then
+				love.graphics.draw(pizzasworditem, 350, 450)
+				love.graphics.draw(pizzasworditem, 450, 350)
+				if itemScreenSelectionX == 7 and itemScreenSelectionY == 9 or itemScreenSelectionY == 7 and itemScreenSelectionX == 9 then
+					love.graphics.draw(pizzasworditem, 570, 100)
+					love.graphics.printf("Pizza Cutter", 550, 160, 90, "center")
+				end
+			end
+			if data[44] == "true" then
+				love.graphics.draw(bearsworditem, 100, 450)
+				love.graphics.draw(bearsworditem, 450, 100)
+				if itemScreenSelectionX == 2 and itemScreenSelectionY == 9 or itemScreenSelectionY == 2 and itemScreenSelectionX == 9 then
+					love.graphics.draw(bearsworditem, 570, 100)
+					love.graphics.printf("Bad Teddy", 550, 160, 90, "center")
+				end
 			end
 		end
 	end
@@ -2579,10 +2602,36 @@ function love.keypressed(key)
 			bgtrigger = true
 		end
 		if key == "i" then
+			itemScreenSelectionX = 0
+			itemScreenSelectionY = 0
 			gamemode = "items"
 		end
 	end
 	if gamemode == "items" then
+		if key == "left" then
+			itemScreenSelectionX = itemScreenSelectionX - 1
+			if itemScreenSelectionX < 0 then
+				itemScreenSelectionX = 9
+			end
+		end
+		if key == "right" then
+			itemScreenSelectionX = itemScreenSelectionX + 1
+			if itemScreenSelectionX > 9 then
+				itemScreenSelectionX = 0
+			end
+		end
+		if key == "up" then
+			itemScreenSelectionY = itemScreenSelectionY - 1
+			if itemScreenSelectionY < 0 then
+				itemScreenSelectionY = 9
+			end
+		end
+		if key == "down" then
+			itemScreenSelectionY = itemScreenSelectionY + 1
+			if itemScreenSelectionY > 9 then
+				itemScreenSelectionY = 0
+			end
+		end
 		if key == "return" then
 			gamemode = "start"
 		end
@@ -2785,13 +2834,13 @@ function merge(selection1, selection2)
 	if (item1 == "Teddy Bear" and item2 == "Toy Sword") or
 	(item2 == "Teddy Bear" and item1 == "Toy Sword") then
 		item = {name = "Bad Teddy", sell = 1, x = player.x, y = player.y, width = 50, height = 50, health = 2}
-		data[2] = "true"
+		data[24] = "true"
 		flag = true
 	end
 	if (item1 == "Pizza" and item2 == "Toy Sword") or
 	(item2 == "Pizza" and item1 == "Toy Sword") then
 		item = {name = "Pizza Cutter", sell = 1, x = player.x, y = player.y, width = 50, height = 50}
-		data[1] = "true"
+		data[44] = "true"
 		flag = true
 	end
 	if (item1 == "Toy Robot" and item2 == "Toy Sword") or
@@ -2967,6 +3016,7 @@ function merge(selection1, selection2)
 	if (item1 == "8-Ball" and item2 == "Balloon") or
 	(item2 == "8-Ball" and item1 == "Balloon") then
 		item = {name = "8-Ball Balloon", sell = 1, x = player.x, y = player.y, width = 50, height = 50}
+		data[1] = "true"
 		flag = true
 	end
 	if (item1 == "Toy Sword" and item2 == "Balloon") or
