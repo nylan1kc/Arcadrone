@@ -13,9 +13,7 @@ function love.load()
 	for lines in love.filesystem.lines('items.lua') do
 		table.insert(data, lines)
 	end
-	
-	
-	
+		
 	bgalpha = 255
 	bgtrigger = false
 	
@@ -136,6 +134,15 @@ function love.load()
 	robot_balloon = love.graphics.newImage("assets/robot-balloon-sprite.png")
 	doll_balloon = love.graphics.newImage("assets/doll-balloon-sprite.png")
 	
+	--usable balloon images
+	charBalloonImage = love.graphics.newImage("assets/char-balloon-balloon.png")
+	charBearBalloonImage = love.graphics.newImage("assets/char-bear-balloon.png")
+	charClockBalloonImage = love.graphics.newImage("assets/char-clock-balloon.png")
+	charPigBalloonImage = love.graphics.newImage("assets/char-piggybank-balloon.png")
+	charPizzaBalloonImage = love.graphics.newImage("assets/char-pizza-balloon.png")
+	charSwordBalloonImage = love.graphics.newImage("assets/char-sword-balloon.png")
+	char8BallBalloonImage = love.graphics.newImage("assets/char-8ball-balloon.png")
+	
 	--enemy images
 	slime = love.graphics.newImage("assets/slime.png")
 	minislime = love.graphics.newImage("assets/mini-slime.png")
@@ -182,8 +189,10 @@ function love.load()
 		items = {},
 		itemselect = 1,
 		friends = {},
+		balloon = nil,
 		flight = false,
 		image = love.graphics.newImage("assets/char-sprite.png"),
+		balloonimage = love.graphics.newImage("assets/char-balloon.png"),
 		attackimage_lr = love.graphics.newImage("assets/char-attack-lr-sprite.png"),
 		attackimage_up = love.graphics.newImage("assets/char-attack-up-sprite.png"),
 		attackimage_dn = love.graphics.newImage("assets/char-attack-dn-sprite.png"),
@@ -2058,9 +2067,17 @@ function love.draw(dt)
 		local x_scale
 		if sword.button == false then
 			if player.facing == "right" then
-				love.graphics.draw(player.image, quads[player.currentframe], player.x, player.y, 0, 1, 1, 0)
+				if player.balloon ~= nil then
+					love.graphics.draw(player.balloonimage, player.x, player.y, 0, 1, 1, 0)
+				else
+					love.graphics.draw(player.image, quads[player.currentframe], player.x, player.y, 0, 1, 1, 0)
+				end
 			else
-				love.graphics.draw(player.image, quads[player.currentframe], player.x, player.y, 0, -1, 1, player.width)
+				if player.balloon ~= nil then
+					love.graphics.draw(player.balloonimage, player.x, player.y, 0, -1, 1, player.width)
+				else
+					love.graphics.draw(player.image, quads[player.currentframe], player.x, player.y, 0, -1, 1, player.width)
+				end
 			end
 		else
 			if sword.dir == "right" then
@@ -2081,6 +2098,42 @@ function love.draw(dt)
 					love.graphics.draw(player.attackimage_dn, attackQuads[player.currentframe], player.x, player.y, 0, 1, 1, 0)
 				else
 					love.graphics.draw(player.attackimage_dn, attackQuads[player.currentframe], player.x, player.y, 0, -1, 1, player.width)
+				end
+			end
+		end
+		--draw balloons
+		if player.balloon ~= nil then
+			if player.facing == "right" then
+				if player.balloon == "Balloon" then
+					love.graphics.draw(charBalloonImage, player.x, player.y, 0, 1, 1, 0)
+				elseif player.balloon == "8-Ball" then
+					love.graphics.draw(char8BallBalloonImage, player.x, player.y, 0, 1, 1, 0)
+				elseif player.balloon == "Bear" then
+					love.graphics.draw(charBearBalloonImage, player.x, player.y, 0, 1, 1, 0)
+				elseif player.balloon == "Stopwatch" then
+					love.graphics.draw(charClockBalloonImage, player.x, player.y, 0, 1, 1, 0)
+				elseif player.balloon == "Piggy" then
+					love.graphics.draw(charPigBalloonImage, player.x, player.y, 0, 1, 1, 0)
+				elseif player.balloon == "Pizza" then
+					love.graphics.draw(charPizzaBalloonImage, player.x, player.y, 0, 1, 1, 0)
+				elseif player.balloon == "Sword" then
+					love.graphics.draw(charSwordBalloonImage, player.x, player.y, 0, 1, 1, 0)
+				end
+			else
+				if player.balloon == "Balloon" then
+					love.graphics.draw(charBalloonImage, player.x, player.y, 0, -1, 1, player.width)
+				elseif player.balloon == "8-Ball" then
+					love.graphics.draw(char8BallBalloonImage, player.x, player.y, 0, -1, 1, player.width)
+				elseif player.balloon == "Bear" then
+					love.graphics.draw(charBearBalloonImage, player.x, player.y, 0, -1, 1, player.width)
+				elseif player.balloon == "Stopwatch" then
+					love.graphics.draw(charClockBalloonImage, player.x, player.y, 0, -1, 1, player.width)
+				elseif player.balloon == "Piggy" then
+					love.graphics.draw(charPigBalloonImage, player.x, player.y, 0, -1, 1, player.width)
+				elseif player.balloon == "Pizza" then
+					love.graphics.draw(charPizzaBalloonImage, player.x, player.y, 0, -1, 1, player.width)
+				elseif player.balloon == "Sword" then
+					love.graphics.draw(charSwordBalloonImage, player.x, player.y, 0, -1, 1, player.width)
 				end
 			end
 		end
@@ -3000,7 +3053,7 @@ function merge(selection1, selection2)
 	end
 	if (item1 == "Teddy Bear" and item2 == "Balloon") or
 	(item2 == "Teddy Bear" and item1 == "Balloon") then
-		item = {name = "Bear Balloon", sell = 1, x = player.x, y = player.y, width = 50, height = 50}
+		item = {name = "Bear Balloon", sell = 1, x = player.x, y = player.y, width = 50, height = 50, health = 2}
 		flag = true
 	end
 	if (item1 == "Piggy Bank" and item2 == "Balloon") or
@@ -3626,12 +3679,54 @@ function useItem(item)
 		end
 	end
 	if item == "Balloon" then
-		player.flight = true
+		if player.balloon == nil then
+			player.flight = true
+			player.balloon = "Balloon"
+			table.remove(player.items, player.itemselect)
+		end
 	end
 	if item == "Bubble Gum" then
-		player.flight = true
-		player.items[player.itemselect].count = player.items[player.itemselect] - 1
-		if player.items[player.itemselect].count <= 0 then
+		if player.balloon == nil then
+			player.flight = true
+			player.balloon = "Bubble Gum"
+			player.items[player.itemselect].count = player.items[player.itemselect] - 1
+			if player.items[player.itemselect].count <= 0 then
+				table.remove(player.items, player.itemselect)
+			end
+		end
+	end
+	if item == "8-Ball Balloon" then
+		if player.balloon == nil then
+			player.flight = true
+			player.balloon = "8-Ball"
+			table.remove(player.items, player.itemselect)
+		end
+	end
+	if item == "Pizza Balloon" then
+		if player.balloon == nil then
+			player.flight = true
+			player.balloon = "Pizza"
+			table.remove(player.items, player.itemselect)
+		end
+	end
+	if item == "Piggy Balloon" then
+		if player.balloon == nil then
+			player.flight = true
+			player.balloon = "Piggy"
+			table.remove(player.items, player.itemselect)
+		end
+	end
+	if item == "Bear Balloon" then
+		if player.balloon == nil then
+			player.flight = true
+			player.balloon = "Bear"
+			table.remove(player.items, player.itemselect)
+		end
+	end
+	if item == "Stopwatch Balloon" then
+		if player.balloon == nil then
+			player.flight = true
+			player.balloon = "Stopwatch"
 			table.remove(player.items, player.itemselect)
 		end
 	end
@@ -3717,10 +3812,11 @@ function onHitEffects(enemy)
 			player.speed = player.speed + .5
 		elseif item.name == "Hot Air Balloon" then
 			player.flight = true
+			player.balloon = "Hot Air"
 		elseif item.name == "Medusa" then
 			enemy.frozen = true
 		elseif item.name == "Fortune Teller" then
-			local rand = rng:random(0, 4)
+			local rand = rng:random(0, 3)
 			if rand == 0 then
 				player.maxhealth = player.maxhealth + 1
 			elseif rand == 1 then
@@ -3729,8 +3825,6 @@ function onHitEffects(enemy)
 				player.speed = player.speed + .5
 			elseif rand == 3 then
 				player.attack = player.attack + 1
-			elseif rand == 4 then
-				player.flight = true
 			end
 		end
 	end
@@ -3846,6 +3940,9 @@ function beardeath(item)
 				player.currenthealth = player.maxhealth
 			end
 		end
+	elseif item == "Bear Balloon" then
+		player.flight = false
+		player.balloon = nil
 	end
 end
 
@@ -3870,8 +3967,57 @@ function takedamage(enemy)
 		end
 		if flag == false then
 			onHitEffects(enemy)
-			if player.flight == true then
-				 player.flight = false
+			if player.balloon ~= nil then
+				 if player.balloon == "Balloon" then
+					player.flight = false
+					player.balloon = nil
+				 elseif player.balloon == "Bubble Gum" then
+					player.flight = false
+					player.balloon = nil
+				 elseif player.balloon == "Hot Air" then
+					player.flight = false
+					player.balloon = nil
+				 elseif player.balloon == "Pizza" then
+					player.flight = false
+					player.balloon = nil
+					table.insert(player.items, {name = "Pizza", cost = .5, sell = .25, x = player.x, y = player.y, width = 50, height = 50})
+					table.insert(player.items, {name = "Pizza", cost = .5, sell = .25, x = player.x, y = player.y, width = 50, height = 50})
+				 elseif player.balloon == "8-Ball" then
+					player.flight = false
+					player.balloon = nil
+					local rand = rng:random(0, 9)
+					if rand == 0 then
+						player.maxhealth = player.maxhealth + 1
+					elseif rand == 1 then
+						player.defense = player.defense + .25
+					elseif rand == 2 then
+						player.speed = player.speed + .5
+					elseif rand == 3 then
+						player.attack = player.attack + 1
+					elseif rand == 4 then
+						table.insert(player.items, {name = "Pizza", cost = .5, sell = .25, x = player.x, y = player.y, width = 50, height = 50})
+					elseif rand == 5 then
+						table.insert(player.items, {name = "Candy", cost = .5, sell = .25, x = player.x, y = player.y, width = 50, height = 50})
+					elseif rand == 6 then
+						table.insert(player.items, {name = "Teddy Bear", cost = .5, sell = .25, x = player.x, y = player.y, width = 50, height = 50})
+					elseif rand == 7 then
+						player.quarters = player.quarters + .25
+					elseif rand == 8 then
+						table.insert(player.items, {name = "8-Ball", cost = .5, sell = .25, x = player.x, y = player.y, width = 50, height = 50})
+					else
+						table.insert(player.items, {name = "Toy Sword", cost = .5, sell = .25, x = player.x, y = player.y, width = 50, height = 50})
+					end
+				 elseif player.balloon == "Stopwatch" then
+					player.flight = false
+					player.balloon = nil
+					for i, enemy in ipairs(grid[starti][startj].enemies) do
+						enemy.frozen = true
+					end
+				 elseif player.balloon == "Piggy" then
+					player.flight = false
+					player.balloon = nil
+					player.quarters = player.quarters + 1
+				 end
 			end
 			player.currenthealth = player.currenthealth - 1
 		end
